@@ -13,13 +13,13 @@ public class Solution {
 			int k = sc.nextInt();
 			String str = sc.next();
             // 회전으로 인해 index를 벗어날 수 있으므로 sb에 더해줌
-            // n/4는 한 면에 있는 글자수 -1 만큼 회전하기 때문
 			StringBuilder sb = new StringBuilder();
-			for(int i=0;i<n/4;i++) {
+			for(int i=0;i<2;i++) {
 				sb.append(str);
 			}
 			
 			// 회전해서 HashSet에 집어넣음 => 중복 제거
+            // n/4는 한 면에 있는 글자수 -1 만큼 회전하기 때문
 			HashSet<String> hs = new HashSet<>();
 			for(int i=0;i<n/4;i++) {
 				for(int j=i;j<i+n;j+=(n/4)) {

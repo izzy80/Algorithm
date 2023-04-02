@@ -4,33 +4,24 @@ public class Main {
 
 	public static void main(String[] args) {
 		Scanner sc = new Scanner(System.in);
-		int n = sc.nextInt();
-		
+		int num = sc.nextInt();
 		int i=1;
-		int cnt =0; 
-		int flag = 0; 
+		int answer=0;
 		while(i<=1000000) {
-			String stm = Integer.toString(i);
-			int sum =0;
-			for(int j=0;j<stm.length();j++) {
-				sum+=stm.charAt(j)-'0';
-			}
+			int sum = 0; 
 			sum+=i;
-			if(sum==n) {
-				System.out.println(i);
-				break;
+			int j=i;
+			while(j>0) {
+				sum+=j%10;
+				j/=10;
 			}
-			else {
-				cnt++;
-			}
-			if(cnt==1000000) {
-				flag = 1;
+			if(sum == num) {
+				answer = i;
+				break; 
 			}
 			i++;
 		}
-		if(flag ==1) {
-			System.out.println(0);
-		}
+		System.out.println(answer);
 	}
 
 }

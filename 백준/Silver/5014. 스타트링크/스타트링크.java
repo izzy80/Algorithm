@@ -1,62 +1,69 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Main {
-	/*
-	 * 입력
-	 * F(총 층), S(강호가 있는 층), G(스타트링크 층), U(위로 u층 올라감), D(아래로 d층 내려감)가 주어짐. 
-	 * 건물을 1층부터 시작하고, 가장 높은 층은 F층 
-	 * 
-	 * 출력
-	 * S층에서 G층으로 가기 위해 눌러야하는 버튼의 수의 최소값
-	 * 엘리베이터로 이동할 수 없으면 use the stairs를 출력 
-	 */
-	static int F, S, G, U, D;
-	static int visited[]; //버튼 몇 번 눌렀는지 계산 
-	
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		F = sc.nextInt();
-		S = sc.nextInt();
-		G = sc.nextInt();
-		U = sc.nextInt();
-		D = sc.nextInt();
-		
-		visited = new int[F+1];
-		
-		BFS(F,S,G,U,D);
-	}//main
+    static int F,S,G,U,D;
+    static int[] floor;
 
-	private static void BFS(int f, int s, int g, int u, int d) {
-		Queue<Integer> q = new LinkedList<>();
-		q.add(s);
-		visited[s] = 1; //시작점 방문(버튼 안 눌렀지만 눌른걸로 침)
-		
-		while(!q.isEmpty()) {
-			int c = q.poll(); //현재 위치 
-			
-			if(c == g) {//현재위치 = 스타트링크 층
-				System.out.println(visited[c]-1); //default로 1한 것 뺀다 
-			}
-			
-			if(c+u <= f && visited[c+u]==0) {
-				//현재위치 + 윗층 <= 최고층 && 방문 안 함
-				visited[c+u] = visited[c]+1;
-				q.add(c+u);
-			}
-			
-			if(c-d >0 && visited[c-d]==0) {
-				//현재위치 - 아래층 >0 && 방문 안 함
-				visited[c-d] = visited[c]+1;
-				q.add(c-d);
-			}
-		}
-		
-		if(visited[g] ==0) {
-			System.out.println("use the stairs");
-		}
-		
-	}
+    static int[] move;
 
+    static int[] dist;
+
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        F = Integer.parseInt(st.nextToken()); //회사 층수
+        S = Integer.parseInt(st.nextToken()); //강호의 위치
+        G = Integer.parseInt(st.nextToken()); //스타트링크의 위치
+        U = Integer.parseInt(st.nextToken()); //위로 U층 가는 버튼
+        D = Integer.parseInt(st.nextToken()); //아래로 D층 가는 버튼
+
+        floor = new int[F+1]; //F층 까지 존재하니까
+        dist = new int[F+1];
+        Arrays.fill(dist, -1);
+
+        move = new int[]{U,D};
+//        System.out.println(Arrays.toString(move));
+
+        BFS(S);
+
+
+    }
+
+    private static void BFS(int s) {
+        Queue<Integer> q = new LinkedList<>();
+        q.add(s);
+        dist[s] = 0;
+
+
+        while(!q.isEmpty()){
+            int c = q.poll();
+//            System.out.println(c);
+
+
+            for(int i=0; i< 2; i++){
+                int n = 0;
+                if(i==0) {
+                    n = c + move[i];
+                }
+                if(i==1){
+                    n = c-move[i];
+                }
+                if(c == G){
+                    System.out.println(dist[c]);
+                    return;
+                }
+                if(n <1 || n>F) continue;
+                if(dist[n] >= 0) continue;
+                dist[n] = dist[c]+1;
+                q.add(n);
+            }
+        }
+        System.out.println("use the stairs");
+    }
 }

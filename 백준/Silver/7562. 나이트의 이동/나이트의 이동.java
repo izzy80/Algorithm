@@ -1,60 +1,80 @@
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Main {
-	static int[][] map;
-	static int l;
-	static int[][] visited;
-	static Queue<int[]> q;
-	static int min = Integer.MAX_VALUE;
-	static int nr,nc;
+    static int I;
+    static int[][] map;
+    static int[][] dist;
 
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		int T = sc.nextInt();
-		for (int tc = 0; tc < T; tc++) {
-			l = sc.nextInt();
-			map = new int[l][l];
-			int pr = sc.nextInt();
-			int pc = sc.nextInt();
-			nr = sc.nextInt();
-			nc = sc.nextInt();
+    static StringTokenizer st;
 
-			map[pr][pc] = 1; // 출발
-			q = new LinkedList<>();
-			visited = new int[l][l];
-			for(int i=0;i<l;i++) {
-				Arrays.fill(visited[i], -1);
-			}
+    static int[] mover = new int[]{-1,-2,-2,-1,1,2,2,1};
+    static int[] movec = new int[]{-2,-1,1,2,-2,-1,1,2};
 
-			BFS(pr, pc);
-			System.out.println(visited[nr][nc]);
 
-		} // tc for문
-	}
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-	private static void BFS(int pr, int pc) {
-		q.add(new int[] { pr, pc });
-		int[][] move = { { -1, -2 }, { -2, -1 }, { -2, 1 }, { -1, 2 }, { 1, -2 }, { 2, -1 }, { 2, 1 }, { 1, 2 } };
-		visited[pr][pc] =0; //출발지는 카운트하지 X
-		while (!q.isEmpty()) {
-			int[] curr = q.poll();
-			int cr = curr[0];
-			int cc = curr[1];
-			if (cr==nr && cc==nc) {
-				break;
-			}
-			for (int i = 0; i < 8; i++) {
-				int nr = cr + move[i][0];
-				int nc = cc + move[i][1];
-				if (nr >= 0 && nr < l && nc >= 0 && nc < l && map[nr][nc] != 1 && visited[nr][nc]==-1) {
-					q.add(new int[] { nr, nc });
-					visited[nr][nc] = visited[cr][cc]+1;
-				}
-			}
-		} // while문
+        int T = Integer.parseInt(br.readLine());
 
-	}
+        for(int tc = 0; tc < T; tc++){
+            I = Integer.parseInt(br.readLine());
+
+            map = new int[I][I];
+            dist = new int[I][I];
+            for(int i=0; i<I;i++){
+                Arrays.fill(dist[i],-1);
+            }
+
+            String st = br.readLine();
+            String[] starr = st.split(" ");
+            int str = Integer.parseInt(starr[0]);
+            int stc = Integer.parseInt(starr[1]);
+
+            String ed = br.readLine();
+            String[] edarr = ed.split(" ");
+            int edr = Integer.parseInt(edarr[0]);
+            int edc = Integer.parseInt(edarr[1]);
+
+            map[str][stc] = 1; // 시작점
+            map[edr][edc] = 2; //도착점
+
+
+
+            BFS(str, stc);
+
+            System.out.println(dist[edr][edc]);
+
+        }
+
+
+
+    }
+
+    private static void BFS(int r, int c) {
+        Queue<int[]> q = new LinkedList<>();
+        dist[r][c] = 0;
+        q.add(new int[]{r,c});
+
+        while(!q.isEmpty()){
+            int[] tmp = q.poll();
+            int cr = tmp[0];
+            int cc = tmp[1];
+
+            for(int m =0; m<8; m++){
+                int nr = cr + mover[m];
+                int nc = cc + movec[m];
+
+                if(nr < 0 || nr >= I || nc < 0|| nc >= I) continue;
+                if(dist[nr][nc] >= 0) continue;
+                dist[nr][nc] = dist[cr][cc]+1;
+                q.add(new int[]{nr,nc});
+            }
+        }
+    }
 }

@@ -16,7 +16,7 @@ public class Main {
         Arrays.sort(rope); //오름차순 정렬
 
         int cnt =0;
-        int max =0;
+        int max =Integer.MIN_VALUE;
         int sum =0;
         for(int i=N-1; i>=0; i--){
             cnt++;

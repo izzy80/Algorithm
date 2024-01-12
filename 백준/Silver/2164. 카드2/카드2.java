@@ -22,8 +22,7 @@ public class Main {
             q.poll();
 
             //두 번째거 제일 아래로 옮긴다.
-            int num = q.poll();
-            q.add(num);
+            q.add(q.poll());
         }
 
         System.out.println(q.peek());

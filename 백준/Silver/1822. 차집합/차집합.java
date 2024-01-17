@@ -12,48 +12,67 @@ public class Main {
         int num_A = Integer.parseInt(st.nextToken());
         int num_B = Integer.parseInt(st.nextToken());
 
-        TreeSet<Integer> A = new TreeSet<>();
-        TreeSet<Integer> B = new TreeSet<>();
-
-        TreeSet<Integer> result = new TreeSet<>();
+        int[] A = new int[num_A];
+        int[] B = new int[num_B];
 
         st = new StringTokenizer(br.readLine());
 
         for(int i=0; i< num_A; i++){
-            A.add(Integer.parseInt(st.nextToken()));
+            A[i] = Integer.parseInt(st.nextToken());
         }
 
         st = new StringTokenizer(br.readLine());
         for(int i=0; i< num_B; i++){
-            B.add(Integer.parseInt(st.nextToken()));
+            B[i] = Integer.parseInt(st.nextToken());
         }
 
-        Iterator it = A.iterator();
+        Arrays.sort(A);
+        Arrays.sort(B);
 
-        while(it.hasNext()){
-            Integer tmp = (Integer)it.next();
-            if(!B.contains(tmp))
-                result.add(tmp);
+
+        //이분탐색
+        List<Integer> answer = new LinkedList<>();
+
+        for(int i=0; i<num_A; i++ ){
+            int start = 0;
+            int end = B.length - 1;
+
+            int number = A[i]; //B에 있는지 확인할 A요소
+
+            boolean flag = false;
+            while(start <= end){
+                int mid = (end+start)/2;
+
+                if(B[mid] == number){ //B에 숫자가 있다면
+                    flag = true;
+                    break;
+                }
+                else if(B[mid] < number){
+                    //A요소가 B[mid]보다 크다면
+                    start = mid+1;
+                }
+                else{
+                    //A요소가 B[mid]보다 작다면
+                    end = mid-1;
+                }
+
+            }
+            if(!flag){
+                answer.add(number);
+            }
         }
-
-        //출력
-        int size = result.size();
+        int size = answer.size();
         System.out.println(size);
 
-
         StringBuilder sb = new StringBuilder();
+        Collections.sort(answer);
 
-        if(size != 0){
-            it = result.iterator();
-            while(it.hasNext()){
-                sb.append(it.next()).append(" ");
+        if(size!=0){
+            for(Integer value : answer){
+                sb.append(value).append(" ");
             }
-
-            System.out.println(sb.toString());
         }
-
-
-
+        System.out.println(sb.toString());
 
 
 

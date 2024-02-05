@@ -27,27 +27,13 @@ public class Main {
         //이분탐색
         for(int i=0; i < M; i++){
             int findNum = Marr[i]; //찾아야할 숫자
-
-            int answer = 0;
-            int start =0;
-            int end = A.length-1;
-            while(start <= end){
-                int mid = (end+start)/2;
-
-                if(A[mid] == findNum){
-                    answer = 1;
-                    break;
-                }
-                else if(A[mid] > findNum){ //찾는 숫자보다 중간값이 크다면,
-                    end = mid-1;
-                }
-                else{
-                    start = mid+1;
-                }
+            int find = Arrays.binarySearch(A, findNum);
+            if(find < 0){
+                System.out.println(0);
             }
-            System.out.println(answer);
+            else{
+                System.out.println(1);
+            }
         }
-
-
     }
 }

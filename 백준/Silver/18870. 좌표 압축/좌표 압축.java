@@ -8,19 +8,20 @@ import java.util.StringTokenizer;
 
 public class Main {
     public static void main(String[] args) throws IOException {
+        //1. 값 집어넣기
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
-        int[] origin = new int[N]; //원본 배열 : 찾는 숫자
+        int[] origin = new int[N]; //1. 원본 배열 : 찾는 숫자
         StringTokenizer st = new StringTokenizer(br.readLine());
         for(int i=0; i< N; i++){
             int num = Integer.parseInt(st.nextToken());
             origin[i] = num;
         }
+
         int[] B = Arrays.copyOf(origin, N);
         Arrays.sort(B);
-//        System.out.println(Arrays.toString(origin));
 
-        List<Integer> list = new ArrayList<>();
+        List<Integer> list = new ArrayList<>(); //2. 중복 없앤 이분탐색할 배열
         int prev = 0;
         int idx = 0;
         while(idx < N){
@@ -31,35 +32,22 @@ public class Main {
             prev = now;
         }
 
-//        for (Integer i : list) {
-//            System.out.print(i + " ");
-//        }
-        int[] C = new int[list.size()];
-        int id = 0;
-        for (Integer i : list) {
-            C[id++] = i;
-        }
-
-//        System.out.println(Arrays.toString(C));
-
-        //이분탐색
+        //2. 이분탐색
         StringBuilder sb = new StringBuilder();
 
         for(int i =0 ; i < N; i++){
             int findNum = origin[i];
-//            System.out.println(findNum);
             int start =0;
-            int end = C.length-1;
+            int end = list.size()-1;
             int answer = 0;
             while(start <= end){
                 int mid = (start+end)/2;
-
-                if(C[mid] == findNum){
+                if(list.get(mid) == findNum){
                     answer = mid;
                     sb.append(mid).append(" ");
                     break;
                 }
-                else if(C[mid] < findNum){
+                else if(list.get(mid)  < findNum){
                     start = mid+1;
                 }
                 else{

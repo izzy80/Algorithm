@@ -23,19 +23,14 @@ public class Main {
         //투포인터
         int min = Integer.MAX_VALUE;
 
-        int start =0;
+     
         int end  =0;
-        while(start <= end && end < N){
-//            System.out.println("start = "+start +", end = "+end);
-            if(A[end] - A[start] < M){
-                end++;
-            }
-            else if(A[end] - A[start] >= M){
-                min = Math.min(min, A[end] - A[start]);
-                start++;
-            }
+        for(int start =0; start < N; start++){
+            while(end < N && A[end] - A[start] < M) end++; 
+            if(end == N) break; //end가 범위를 벗어난다면 종료
+            min = Math.min(min, A[end] - A[start]); 
         }
-
+        
         System.out.println(min);
     }
 }

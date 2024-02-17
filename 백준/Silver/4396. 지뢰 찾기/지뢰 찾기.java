@@ -11,6 +11,7 @@ public class Main {
         char[][] map = new char[N][N];
         boolean[][] visited = new boolean[N][N];
         String[][] answer = new String[N][N];
+        boolean flag = false; //지뢰칸 오픈 여부
 
         for(int i=0;i<N; i++){
             //.으로 채우기
@@ -42,6 +43,7 @@ public class Main {
             for(int j=0; j< N; j++){
                 int cnt = 0; //상하좌우대각선의 지뢰의 개수
                 if(visited[i][j]){//방문했어
+                    if(map[i][j] == '*') flag = true;
                     for(int m=0;m<8;m++){
                         int nr = i+mover[m];
                         int nc = j+movec[m];
@@ -50,22 +52,22 @@ public class Main {
                         if(map[nr][nc] == '*') cnt++;
                     }
                     answer[i][j] = Integer.toString(cnt);
-
-                    if(map[i][j] == '*'){
-                        for(int k=0; k< N; k++){
-                            for(int l =0; l < N; l++){
-                                if(map[k][l] == '*'){
-                                    answer[k][l] = "*";
-                                }
-                            }
-                        }
-                    }
                 }
-
-
-
             }
         }
+
+        if(flag){
+            for(int i=0; i< N; i++){
+                for(int j =0; j < N; j++){
+                    if(map[i][j] == '*'){
+                        answer[i][j] = "*";
+                    }
+                }
+            }
+
+        }
+
+
 
         StringBuilder sb = new StringBuilder();
         for(int i=0; i < N; i++){

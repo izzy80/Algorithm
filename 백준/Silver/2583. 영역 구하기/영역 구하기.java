@@ -4,86 +4,89 @@ import java.io.InputStreamReader;
 import java.util.*;
 
 public class Main {
-    static int M,N,K;
+    static int M,N;
+    static int[] mover = {1,-1,0,0};
+    static int[] movec = {0,0,1,-1};
     static int[][] map;
+    static int areaCount = 0;
     static boolean[][] visited;
-    static int cnt;
+    static ArrayList<Integer> result = new ArrayList<>();
 
-    static int[] mover = new int[]{-1,0,1,0};
-    static int[] movec = new int[]{0,1,0,-1};
 
-    static List list;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-
         M = Integer.parseInt(st.nextToken()); //5
         N = Integer.parseInt(st.nextToken()); //7
-        K = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
 
         map = new int[M][N];
         visited = new boolean[M][N];
 
-        for(int i =0; i< K ;i++){
+        //map만들기
+        for(int i=0; i < K; i++){
             st = new StringTokenizer(br.readLine());
-            int lx =  Integer.parseInt(st.nextToken()); //왼쪽 아래
-            int ly =  Integer.parseInt(st.nextToken()); //왼쪽 아래
-            int rx =  Integer.parseInt(st.nextToken()); //오른쪽 위
-            int ry =  Integer.parseInt(st.nextToken()); //오른쪽 위
+            int x1 = Integer.parseInt(st.nextToken());
+            int y1 = Integer.parseInt(st.nextToken());
+            int x2 = Integer.parseInt(st.nextToken());
+            int y2 = Integer.parseInt(st.nextToken());
 
-            for(int r=M-ry;r<M-ly;r++){
-                for(int c=lx;c<rx;c++){
-//                    System.out.println(r+","+c);
-                    map[r][c] = 1;
+
+            for(int j=y1; j<y2; j++){
+                for(int k=x1; k<x2; k++){
+                    map[j][k] = 1;
                 }
             }
-        }//for문
-        cnt =0;
-        list = new LinkedList();
+        }
+//        System.out.println(Arrays.deepToString(map));
 
-        for(int i=0; i< M;i++){
-            for(int j=0; j< N; j++){
-                if(!visited[i][j] && map[i][j] == 0){
+        //BFS
+        for(int i=0; i<M; i++){
+            for(int j=0; j < N; j++){
+                if(map[i][j]==0 && !visited[i][j]){
+                    //map이 0이면서 방문하지 않은 곳
                     BFS(i,j);
+                    areaCount++; //BFS가 돌아갈 때마다 cnt증가.
                 }
             }
         }
 
-        System.out.println(cnt);
-        list.sort(Comparator.naturalOrder());
-        for(int i=0; i< list.size();i++){
-            System.out.print(list.get(i) +" ");
+        System.out.println(areaCount);
+        Collections.sort(result);
+        StringBuilder sb = new StringBuilder();
+        for (Integer i : result) {
+            sb.append(i).append(" ");
         }
-        System.out.println();
+        System.out.println(sb.toString());
     }
 
-    private static void BFS(int r, int c) {
+    private static void BFS(int i, int j) {
+        int area = 1;
         Queue<int[]> q = new LinkedList<>();
-        visited[r][c] = true;
-        q.add(new int[]{r,c});
-        cnt++;
+        q.add(new int[]{i,j});
+        visited[i][j] = true; //방문처리
 
-        int area =0;
         while(!q.isEmpty()){
             int[] tmp = q.poll();
-            int cr = tmp[0];
-            int cc = tmp[1];
-            area++;
+            int r = tmp[0];
+            int c = tmp[1];
 
-            for(int m =0; m<4;m++){
-                int nr = cr+mover[m];
-                int nc = cc+movec[m];
+            for(int m=0; m <4; m++){
+                int nr = r + mover[m];
+                int nc = c + movec[m];
 
-                if(nr <0 || nr >= M || nc <0|| nc >= N) continue;
-                if(visited[nr][nc] || map[nr][nc] == 1) continue;
-
-                visited[nr][nc] = true;
+                if(nr < 0 || nr >= M || nc < 0 || nc >= N) continue;
+                if(map[nr][nc]==1 || visited[nr][nc]) continue;
+                //map=1면 선택X. visited=true면 이미 방문
                 q.add(new int[]{nr,nc});
+                visited[nr][nc] = true;
+                area++;
             }
 
-
         }
-        list.add(area);
+
+        result.add(area);
+
     }
 }

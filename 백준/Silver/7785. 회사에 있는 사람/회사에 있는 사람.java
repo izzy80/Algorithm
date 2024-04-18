@@ -1,29 +1,34 @@
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
 
 public class Main {
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine());
+        StringTokenizer st;
+        TreeMap<String, String> thm = new TreeMap<>((o1,o2) -> {
+            return o2.compareTo(o1);
+        });
+        for(int i=0; i < N; i++){
+            st = new StringTokenizer(br.readLine());
+            String name = st.nextToken();
+            String inout = st.nextToken();
 
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		int T = sc.nextInt(); // 테스트 케이스 
-		
-		HashMap<String, String> hm = new HashMap<>();
-		for(int tc=0;tc<T;tc++) {
-			hm.put(sc.next(), sc.next()); // 집어넣으면서 중복된 것은 바로 수정해줌 
-		}// tc for문
-		
-		// 정렬
-		List<String> key = new ArrayList<>(hm.keySet());
-		key.sort(Collections.reverseOrder());
-		
-		for(String k:key) {
-			if(hm.get(k).equals("enter")) {
-				System.out.println(k);
-			}
-		}
+            if(inout.equals("enter")){
+                thm.put(name, inout);
+            }
+            else{
+                thm.put(name, inout);
+            }
+        }
 
-	}// main
+        for (String s : thm.keySet()) {
+            if(thm.get(s).equals("enter")){
+                System.out.println(s);
+            }
+        }
+
+
+
+    }
 }

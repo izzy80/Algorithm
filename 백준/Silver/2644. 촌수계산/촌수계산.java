@@ -1,65 +1,47 @@
+import java.util.*;
 import java.io.*;
-import java.util.StringTokenizer;
+
 
 public class Main {
-    final static int MAX = 100 + 10;
-    static boolean[][] graph;
-    static boolean[] visited;
-    static int N, M, start, end, answer;
-
+    static int N;
+    static int end;
+    static ArrayList<Integer>[] graph;
+    static int ans;
     public static void main(String[] args) throws IOException {
-        //0. 입력 및 초기화
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-
         N = Integer.parseInt(br.readLine());
-
         StringTokenizer st = new StringTokenizer(br.readLine());
-        start = Integer.parseInt(st.nextToken());
+        int start = Integer.parseInt(st.nextToken());
         end = Integer.parseInt(st.nextToken());
 
-        M = Integer.parseInt(br.readLine());
-
-        //1. graph에 연결 정보 채우기
-        graph = new boolean[MAX][MAX];
-        visited = new boolean[MAX];
-        answer = -1;
-
-        int x,y;
-        for(int i=0; i< M; i++){
+        int M = Integer.parseInt(br.readLine());
+        graph = new ArrayList[N+1];
+        for(int i=1; i <= N; i++){
+            graph[i] = new ArrayList<>();
+        }
+        boolean[] visited = new boolean[N+1];
+        for(int i=0; i < M; i++){
             st = new StringTokenizer(br.readLine());
-            x = Integer.parseInt(st.nextToken());
-            y = Integer.parseInt(st.nextToken());
-
-            graph[x][y] = true;
-            graph[y][x] = true;
+            int x = Integer.parseInt(st.nextToken());
+            int y = Integer.parseInt(st.nextToken());
+            graph[x].add(y);
+            graph[y].add(x);
         }
-
-
-        //2. dfs(재귀함수 호출)
-        dfs(start, 0);
-
-
-        //3. 출력
-        bw.write(String.valueOf(answer));
-
-        bw.close();
-        br.close();
+        ans = 0;
+        DFS(start, visited, 0);
+        System.out.println(ans == 0 ? -1 : ans);
     }
-
-    private static void dfs(int idx, int depth) {
-        visited[idx] = true;
+    static public void DFS(int idx, boolean[] visited, int depth){
         if(idx == end){
-           answer = depth;
-           return;
+            ans = depth;
+            return;
         }
-
-        for(int i=1; i <=N; i++){
-            if(visited[i] == false && graph[idx][i]){
-                dfs(i, depth+1);
-            }
+        visited[idx] = true;
+        for(int next : graph[idx]){
+            if(visited[next]) continue;
+            DFS(next, visited, depth+1);
+            visited[next] = false;
         }
-
 
     }
 }

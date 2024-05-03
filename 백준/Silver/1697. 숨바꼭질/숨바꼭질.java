@@ -1,63 +1,56 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int N,K;
-    static int[] arr = new int[100001];
-
-    static int[] move = new int[]{-1, 1,3};
-
-    static int time;
-
-
-
-    public static void main(String[] args) throws IOException {
+    static int ans;
+    static int[] move = {-1,1};
+    static int[] visited;
+    static int val = 100000;
+    public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
 
-        N = Integer.parseInt(st.nextToken());
-        K = Integer.parseInt(st.nextToken());
-        Arrays.fill(arr, -1);
+        visited = new int[val+1];
+        BFS(N,K);
+        System.out.println(visited[K]);
 
-
-        BFS();
-
-//        System.out.println(Arrays.toString(arr));
-        System.out.println(arr[K]);
     }
 
-    private static void BFS() {
+    static public void BFS(int start, int end){
         Queue<Integer> q = new LinkedList<>();
-
-        arr[N] = 0;
-        q.add(N);
+        Arrays.fill(visited, -1);
+        q.add(start);
+        visited[start] = 0;
 
         while(!q.isEmpty()){
-            int cl = q.poll();
-//            System.out.println(cl);
+            int tmp = q.poll();
+            if(tmp == end){
+                return;
+            }
 
-            for(int i=0; i<3;i++){
-                int nl =0;
-                if(move[i] == 3){
-                    nl = 2*cl;
+            int next = 0;
+            for(int m= 0; m < 2; m++){
+                next = tmp+move[m];
+                if(checkRange(next)){
+                    q.add(next);
+                    visited[next] = visited[tmp]+1;
                 }
-                else{
-                    nl = cl+move[i];
-                }
-
-                if(nl < 0 || nl > 100000) continue;
-                if(arr[nl] != -1) continue;
-                arr[nl] = arr[cl]+1;
-//                System.out.println(arr[nl]);
-                q.add(nl);
+            }
+            next = tmp*2;
+            if(checkRange(next)){
+                q.add(next);
+                visited[next] = visited[tmp]+1;
             }
         }
 
-
     }
+
+    static public boolean checkRange(int next){
+        if(next < 0 || next > val) return false;
+        if(visited[next] != -1) return false;
+        return true;
+    }
+
 }

@@ -1,69 +1,50 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int F,S,G,U,D;
-    static int[] floor;
-
+    static int F;
     static int[] move;
-
-    static int[] dist;
-
+    static int ans;
+    static int[] visited;
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        F = Integer.parseInt(st.nextToken()); //회사 층수
-        S = Integer.parseInt(st.nextToken()); //강호의 위치
-        G = Integer.parseInt(st.nextToken()); //스타트링크의 위치
-        U = Integer.parseInt(st.nextToken()); //위로 U층 가는 버튼
-        D = Integer.parseInt(st.nextToken()); //아래로 D층 가는 버튼
+        F = Integer.parseInt(st.nextToken()); //총 F층
+        int S = Integer.parseInt(st.nextToken()); //강호가 있는 곳(시작점)
+        int G = Integer.parseInt(st.nextToken()); //스타트링크의 위치(도착점)
+        int U = Integer.parseInt(st.nextToken()); //위로 U층 올라감
+        int D = Integer.parseInt(st.nextToken()); //아래로 D층 내려감
 
-        floor = new int[F+1]; //F층 까지 존재하니까
-        dist = new int[F+1];
-        Arrays.fill(dist, -1);
-
-        move = new int[]{U,D};
-//        System.out.println(Arrays.toString(move));
-
-        BFS(S);
-
-
+        move = new int[]{U,-D};
+        ans = -1;
+        BFS(S,G);
+        System.out.println(ans == -1? "use the stairs" : ans);
     }
 
-    private static void BFS(int s) {
+    static public void BFS(int start, int end){
         Queue<Integer> q = new LinkedList<>();
-        q.add(s);
-        dist[s] = 0;
+        visited = new int[F+1];
+        Arrays.fill(visited, -1);
+        q.add(start);
+        visited[start] = 0;
 
 
         while(!q.isEmpty()){
-            int c = q.poll();
-//            System.out.println(c);
+            int tmp = q.poll();
+            if(tmp == end){
+                ans = visited[end];
+                return;
+            }
 
+            for(int m = 0; m < 2; m++){
+                int nr = tmp + move[m];
 
-            for(int i=0; i< 2; i++){
-                int n = 0;
-                if(i==0) {
-                    n = c + move[i];
-                }
-                if(i==1){
-                    n = c-move[i];
-                }
-                if(c == G){
-                    System.out.println(dist[c]);
-                    return;
-                }
-                if(n <1 || n>F) continue;
-                if(dist[n] >= 0) continue;
-                dist[n] = dist[c]+1;
-                q.add(n);
+                if(nr < 1 || nr > F) continue;
+                if(visited[nr] != -1) continue;
+                q.add(nr);
+                visited[nr] = visited[tmp]+1;
             }
         }
-        System.out.println("use the stairs");
+
     }
 }

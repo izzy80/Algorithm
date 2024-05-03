@@ -1,147 +1,125 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-    static StringTokenizer st;
     static int N,M;
-
-    static boolean[][] visited;
-    static int[] mover = new int[]{-1,0,1,0};
-    static int[] movec = new int[]{0,1,0,-1};
     static int[][] map;
-
-    static int[][] copymap;
-
-    static int areacnt;
+    static boolean[][] visited;
+    static int[] mover = {-1,1,0,0};
+    static int[] movec = {0,0,-1,1};
+    static int icebergCnt;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        st = new StringTokenizer(br.readLine());
+        StringTokenizer st = new StringTokenizer(br.readLine());
         N = Integer.parseInt(st.nextToken());
         M = Integer.parseInt(st.nextToken());
 
         map = new int[N][M];
-        copymap = new int[N][M]; //녹아야하는 빙하 높이 cnt
-
-        for(int i=0; i<N;i++){
+        for(int i = 0; i < N; i++){
             st = new StringTokenizer(br.readLine());
-            for(int j =0; j< M; j++){
-                map[i][j] =  Integer.parseInt(st.nextToken());
+            for(int j=0; j < M; j++){
+                map[i][j] = Integer.parseInt(st.nextToken());
             }
         }
-//        System.out.println(Arrays.deepToString(map));
 
-        boolean isiceberzero = false;
+        //solve
         int year = 0;
+        boolean flag = false;
 
-        while(!isiceberzero){
+        while(true){
+//            System.out.println("year = "+year);
+//            System.out.println(Arrays.deepToString(map));
+            //1. 빙산의 수 센다
+            countIce();
+            //2. 빙산의 수가 없으면 return
+            if(icebergCnt == 0) break;
+            //3. 빙산의 개수 세기
+            int groupIce = 0;
             visited = new boolean[N][M];
-            //1. 지역 개수 세기
-            areacnt =0;
-            for(int i=0; i<N;i++){
-                for(int j=0; j<M;j++){
-                    if(!visited[i][j] && map[i][j]!=0){
+            for(int i=0; i < N; i++){
+                for(int j=0; j < M; j++){
+                    if(map[i][j]!=0 && !visited[i][j]){
                         BFS(i,j);
+                        groupIce++;
                     }
                 }
             }
-//            System.out.println(year+"년 빙산 지역 개수 : "+areacnt);
-            if(areacnt >= 2) {
-                System.out.println(year);
+//            System.out.println(groupIce);
+            //4. 빙산의 갯수가 2개 이상이면 멈춤
+            if(groupIce >= 2) {
+                flag = true;
                 break;
             }
+            //5. 얼음 갱신하기
+            int[][] zero = new int[N][M];
+            for(int i=0;i < N; i++){
+                for(int j=0; j < M; j++){
+                    int zeroCnt =0;
+                    if(map[i][j] !=0){
+                        for(int m = 0; m < 4; m++) {
+                            int ni = i + mover[m];
+                            int nj = j + movec[m];
 
-            //2. 1년 지나면 얼음 녹이기
+                            if (ni < 0 || ni >= N || nj < 0 || nj >= M) continue;
+                            if (map[ni][nj] == 0) zeroCnt++;
+                        }
+                        zero[i][j] = zeroCnt;
+                    }
+                }
+            }
+            //갱신
+            for(int i=0; i < N; i++){
+                for(int j=0; j < M; j++){
+                    if(map[i][j] !=0){
+                        if(map[i][j] - zero[i][j] >= 0){
+                            map[i][j] -= zero[i][j];
+                        }
+                        else{
+                            map[i][j] = 0;
+                        }
+                    }
+                }
+            }
+
+            //6. 년도 증가
             year++;
-            year();
-
-            //3. 빙하가 다 녹았는지 세기
-            isiceberzero = isIceberZero();
         }
 
-        //출력
-        if(areacnt < 2){
-            System.out.println(0);
+        System.out.println(flag?year : 0);
+
+
+
+    }
+    static public void countIce(){
+        icebergCnt = 0;
+        for(int i = 0; i < N; i++){
+            for(int j=0; j < M; j++){
+               if(map[i][j] != 0) icebergCnt++;
+            }
         }
+    }
 
-
-    }//main
-
-    private static void BFS(int i, int j) {
+    static public void BFS(int r, int c){
         Queue<int[]> q = new LinkedList<>();
-        visited[i][j] = true;
-        q.add(new int[]{i,j});
-        areacnt++;
+        q.add(new int[]{r,c});
+        visited[r][c] = true;
 
         while(!q.isEmpty()){
             int[] tmp = q.poll();
             int cr = tmp[0];
             int cc = tmp[1];
 
-            for(int m=0; m< 4; m++){
-                int nr = cr+mover[m];
-                int nc = cc+movec[m];
+            for(int m= 0; m <4; m++){
+                int nr = cr + mover[m];
+                int nc = cc + movec[m];
 
-                if(nr <0 || nr >= N || nc <0 || nc >= M) continue;
-                if(visited[nr][nc] || map[nr][nc] == 0) continue;
-                visited[nr][nc]=true;
+                if(nr < 0|| nr >= N || nc < 0 || nc >= M) continue;
+                if(visited[nr][nc]) continue;
+                if(map[nr][nc] == 0) continue;
                 q.add(new int[]{nr,nc});
-
+                visited[nr][nc] = true;
             }
         }
     }
-
-    private static boolean isIceberZero() {
-        int cnt =0;
-        int len = N*M;
-        boolean ans = false;
-        for(int i=0; i<N; i++){
-            for(int j=0; j<M;j++){
-                if(map[i][j] == 0){
-                    cnt++;
-                }
-            }
-        }
-        if(cnt == len) ans = true;
-        //만약 0인 개수와 총 map의 개수가 같다면 다 바다가 되어버린 것
-        return ans;
-    }
-
-    private static void year() {
-        for(int i=0; i<N;i++){
-            for(int j=0; j<M; j++){
-                if(map[i][j] != 0){
-                    //0이 아닌 곳은 아직 빙하가 녹지 않은 곳
-                    int r = i;
-                    int c = j;
-                    int burgcnt = 0;
-                    for(int m=0;m<4;m++){
-                        //사방탐색하면서 주변 바다의 개수 체크!
-                        int nr = r+mover[m];
-                        int nc = c+movec[m];
-                        if(nr <0 || nr >= N || nc <0 ||nc >= M) continue;
-                        if(map[nr][nc] == 0) burgcnt++;
-                    }
-                    copymap[r][c] = burgcnt;
-                }
-            }
-        }
-        //빙하 녹이기
-        for(int i=0; i<N; i++){
-            for(int j=0; j<M;j++){
-                if (map[i][j] - copymap[i][j] <= 0){
-                    //주변의 바다개수로 뺀 값이 0보다 작으면 0으로 한다.
-                    map[i][j] = 0;
-                }
-                else{
-                    map[i][j]-= copymap[i][j];
-                }
-            }
-        }
-    }//year 함수
 }

@@ -1,4 +1,13 @@
 -- 코드를 입력하세요
+-- CAR_RENTAL_COMPANY_CAR : 자동차 대여 회사에서 대여 중인 자동차들의 정보
+-- CAR_RENTAL_COMPANY_RENTAL_HISTORY : 자동차 대여 기록 정보 
+-- CAR_RENTAL_COMPANY_DISCOUNT_PLAN : 자동차 종류 별 대여 기간 종류 별 정책 정보
+
+-- SELECT CAR_ID, CAR_TYPE, AS FEE
+-- WHERE CAR_TYPE = '세단' OR CAR_TYPE='SUV'
+-- 대여기간 2022-11-01 2022-11-30
+-- 해당 기간 동안 대여 금액이 50만원 이상 200만원 이하 
+-- ORDER BY FEE DESC, CAR_TYPE, CAR_ID DESC
 SELECT a.CAR_ID, a.CAR_TYPE, 
 		ROUND(a.DAILY_FEE*30*(100-c.DISCOUNT_RATE)/100) AS FEE 
         -- 대여료 * 30 * ((100 - 할인률) / 100)

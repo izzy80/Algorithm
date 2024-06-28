@@ -1,29 +1,33 @@
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		int N = sc.nextInt(); //온도를 측정한 전체 날짜의 수 
-		int K = sc.nextInt();
-		int[] arr = new int[N];
-		for(int i=0;i<N;i++) {
-			arr[i] = sc.nextInt();
-		}
-		int st = 0;
-		int ed = K-1;
-		int max = Integer.MIN_VALUE;
-		while(ed < arr.length) {
-			int sum = 0; 
-			for(int i=st;i<=ed;i++) {
-				sum += arr[i];
-			}
-			if(max < sum) {
-				max = sum;
-			}
-			st++;
-			ed++;
-		}
-		System.out.println(max);
-		
-	}
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int N = Integer.parseInt(st.nextToken());
+        int K = Integer.parseInt(st.nextToken());
+        int[] number = new int[N];
+
+        st = new StringTokenizer(br.readLine());
+        for(int i=0; i < N; i++){
+            number[i] = Integer.parseInt(st.nextToken());
+        }
+
+
+        int answer =0;
+        for(int i=0; i<K; i++){
+            answer+=number[i];
+        }
+
+        int sum = answer;
+        for(int i=K; i< N; i++){
+            sum = sum - number[i-K]+number[i];
+            answer = Math.max(answer, sum);
+        }
+
+        System.out.println(answer);
+
+
+    }
 }

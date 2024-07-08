@@ -1,33 +1,41 @@
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		int N = sc.nextInt(); // 물품의 수
-		int K = sc.nextInt(); // 준서가 버틸 수 있는 무게
-		int[] weights = new int[N + 1];
-		int[] values = new int[N + 1];
-		for (int i = 1; i <= N; i++) {
-			weights[i] = sc.nextInt();
-			values[i] = sc.nextInt();
-		}
-		
-		int[][] dp = new int[N + 1][K + 1]; // 0부터 시작
-		for (int i = 1; i <= N; i++) {// 행 돌기
-			for (int w = 0; w <= K; w++) {
-				if (weights[i] <= w) { 
-					// 무게가 범위안에 들어가 있으면 가방 안에 집어넣을 수 있음
-					dp[i][w] = Math.max(dp[i - 1][w], dp[i - 1][w - weights[i]] + values[i]);
-				} else {
-					// 무게가 범위를 벗어나가면 그 전 무게를 가져온다. 
-					dp[i][w] = dp[i - 1][w];
-				}
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        
+        int N = Integer.parseInt(st.nextToken()); //물품의 수
+        int K = Integer.parseInt(st.nextToken()); //버틸 수 있는 무게
+        
+        int[] W = new int[N + 1]; // 무게
+        int[] V = new int[N + 1]; // 가치
+        int[][] dp = new int[N+1][K+1];
+        
+        for(int i=1; i<= N; i++){
+            st = new StringTokenizer(br.readLine());
+            W[i] = Integer.parseInt(st.nextToken()); //무게
+            V[i] = Integer.parseInt(st.nextToken()); //가치
+        }
 
-			}
+        //solve
+        for (int i = 1; i <= N; i++) {
+            for (int j = 1; j <= K; j++) {
 
-		}
-		System.out.println(dp[N][K]);
+                // i번째 무게를 더 담을 수 없는 경우
+                if(W[i] > j) {
+                    dp[i][j] = dp[i - 1][j];
+                }
+                // i번째 무게를 더 담을 수 있는 경우
+                else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i - 1][j - W[i]] + V[i]);
+                }
 
-	}// main
+            }
+        }
+        //print
+        System.out.println(dp[N][K]);
+
+    }
 }

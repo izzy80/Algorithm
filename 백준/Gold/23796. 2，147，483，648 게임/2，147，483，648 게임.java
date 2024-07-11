@@ -1,13 +1,22 @@
-import java.util.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.StringTokenizer;
 
 public class Main {
+    static int N;
+    static long[][] map;
+    static long[][] answer_map;
+
     public static void main(String[] args) throws IOException{
+        //1. input
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = 8;
-        long[][] map = new long[N][N];
-        long[][] new_map = new long[N][N]; //답
-        
+        N = 8;
+        map = new long[N][N];
+        answer_map = new long[N][N]; //답
+
         StringTokenizer st;
         for(int i=0; i < N; i++){
             st = new StringTokenizer(br.readLine());
@@ -15,8 +24,23 @@ public class Main {
                 map[i][j] = Long.parseLong(st.nextToken());
             }
         }
-        
         String dir = br.readLine(); //방향키
+
+        //2. solve
+        solve(dir);
+
+        //3. print
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i < N; i++){
+            for(int j=0; j < N; j++){
+                sb.append(answer_map[i][j]).append(" ");
+            }
+            sb.append("\n");
+        }
+        System.out.println(sb);
+    }
+
+    static public void solve(String dir){
         Queue<Long> q;
         switch (dir){
             case "U" :
@@ -28,23 +52,7 @@ public class Main {
                         }
                     }
                     //한 줄 끝
-                    int idx = 0;
-                    while(!q.isEmpty()){
-                        long tmp = q.poll();
-                        if(q.peek() == null){
-                            new_map[idx][c] = tmp;
-                        }
-                        else{
-                            long next = q.peek();
-                            if(tmp == next){//같으면
-                                new_map[idx++][c] = tmp*2;
-                                q.poll();
-                            }
-                            else{//다르면
-                                new_map[idx++][c] = tmp;
-                            }
-                        }
-                    }
+                    fillRow(q, c, 0);
                 }
                 break;
             case "D" :
@@ -56,24 +64,7 @@ public class Main {
                         }
                     }
                     //한 줄 끝
-                    int idx = N-1;
-                    while(!q.isEmpty()){
-                        long tmp = q.poll();
-                        if(q.peek() == null){
-                            new_map[idx][c] = tmp;
-                            q.poll();
-                        }
-                        else{
-                            long next = q.peek();
-                            if(tmp == next){//같으면
-                                new_map[idx--][c] = tmp*2;
-                                q.poll();
-                            }
-                            else{//다르면
-                                new_map[idx--][c] = tmp;
-                            }
-                        }
-                    }
+                    fillRow(q,c,N-1);
                 }
                 break;
             case "L" :
@@ -85,24 +76,7 @@ public class Main {
                         }
                     }
                     //한 줄 끝
-                    int idx = 0;
-                    while(!q.isEmpty()){
-                        long tmp = q.poll();
-                        if(q.peek() == null){
-                            new_map[r][idx] = tmp;
-                            q.poll();
-                        }
-                        else{
-                            long next = q.peek();
-                            if(tmp == next){//같으면
-                                new_map[r][idx++] = tmp*2;
-                                q.poll();
-                            }
-                            else{//다르면
-                                new_map[r][idx++] = tmp;
-                            }
-                        }
-                    }
+                    fillCol(q, r,0);
                 }
                 break;
             case "R" :
@@ -113,37 +87,52 @@ public class Main {
                             q.add(map[r][c]);
                         }
                     }
-
                     //한 줄 끝
-                    int idx = N-1;
-                    while(!q.isEmpty()){
-                        long tmp = q.poll();
-                        if(q.peek() == null){
-                            new_map[r][idx] = tmp;
-                            q.poll();
-                        }
-                        else{
-                            long next = q.peek();
-                            if(tmp == next){//같으면
-                                new_map[r][idx--] = tmp*2;
-                                q.poll();
-                            }
-                            else{//다르면
-                                new_map[r][idx--] = tmp;
-                            }
-                        }
-                    }
+                    fillCol(q, r,N-1);
                 }
                 break;
         }
+    }
 
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i < N; i++){
-            for(int j=0; j < N; j++){
-                sb.append(new_map[i][j]).append(" ");
+    static public void fillRow(Queue<Long> q, int c, int start){
+        int idx = start;
+        while(!q.isEmpty()){
+            long tmp = q.poll();
+            if(q.peek() == null){
+                answer_map[idx][c] = tmp;
+                q.poll();
             }
-            sb.append("\n");
+            else{
+                long next = q.peek();
+                if(tmp == next){//같으면
+                    answer_map[start == 0 ? idx++ : idx--][c] = tmp * 2;
+                    q.poll();
+                }
+                else{//다르면
+                    answer_map[start == 0 ? idx++ : idx--][c] = tmp;
+                }
+            }
         }
-        System.out.println(sb);
+    }
+
+    static public void fillCol(Queue<Long> q, int r, int start){
+        int idx = start;
+        while(!q.isEmpty()){
+            long tmp = q.poll();
+            if(q.peek() == null){
+                answer_map[r][idx] = tmp;
+                q.poll();
+            }
+            else{
+                long next = q.peek();
+                if(tmp == next){//같으면
+                    answer_map[r][start == 0 ? idx++ : idx--] = tmp*2;
+                    q.poll();
+                }
+                else{//다르면
+                    answer_map[r][start == 0 ? idx++ : idx--] = tmp;
+                }
+            }
+        }
     }
 }

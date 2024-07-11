@@ -6,12 +6,8 @@ public class Main {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = 8;
         long[][] map = new long[N][N];
-        long[][] new_map = new long[N][N];
-        for(int i=0; i < N; i++){
-            Arrays.fill(map[i],0);
-            Arrays.fill(new_map[i],0);
-        }
-
+        long[][] new_map = new long[N][N]; //답
+        
         StringTokenizer st;
         for(int i=0; i < N; i++){
             st = new StringTokenizer(br.readLine());
@@ -19,8 +15,7 @@ public class Main {
                 map[i][j] = Long.parseLong(st.nextToken());
             }
         }
-
-
+        
         String dir = br.readLine(); //방향키
         Queue<Long> q;
         switch (dir){
@@ -150,8 +145,5 @@ public class Main {
             sb.append("\n");
         }
         System.out.println(sb);
-
-
-
     }
 }

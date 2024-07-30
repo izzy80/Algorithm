@@ -2,72 +2,49 @@ import java.util.*;
 
 class Solution {
     public int solution(String str1, String str2) {
-        int answer = 0;
-        str1 = str1.toUpperCase(); // 모두 대문자로 
-		str2 = str2.toUpperCase();
-        
-        // System.out.println(str1);
-        // System.out.println(str2);
-        
-        HashMap<String,Integer> hm1 = new HashMap<>();
-        HashMap<String,Integer> hm2 = new HashMap<>();
-        HashMap<String,Integer> intersection = new HashMap<>();
-        HashMap<String,Integer> union = new HashMap<>();
-        
-        for(int i = 0; i < str1.length()-1; i++) {
-			char a = str1.charAt(i);
-			char b = str1.charAt(i+1);
+      int answer = 0;
 
-			// 문자만 가진 경우만 추가 
-			if(Character.isLetter(a) && Character.isLetter(b)) {
-				String str = Character.toString(a) + Character.toString(b);
-				hm1.put(str,hm1.getOrDefault(str,0)+1);
-			}
-		}
-        
-         for(int i = 0; i < str2.length()-1; i++) {
-			char a = str2.charAt(i);
-			char b = str2.charAt(i+1);
+            HashMap<String, Integer> hm1 = new HashMap<>();
+            HashMap<String, Integer> hm2 = new HashMap<>();
 
-			// 문자만 가진 경우만 추가 
-			if(Character.isLetter(a) && Character.isLetter(b)) {
-				String str = Character.toString(a) + Character.toString(b);
-				hm2.put(str,hm2.getOrDefault(str,0)+1);
-			}
-		}
-        
-        //교집합
-        for(String key : hm1.keySet()){
-            if(hm2.getOrDefault(key,0)!= 0){
-                intersection.put(key,Math.min(hm1.get(key),hm2.get(key)));
-                union.put(key,Math.max(hm1.get(key),hm2.get(key)));
+            HashSet<String> union = new HashSet<>();
+            HashSet<String> intersection = new HashSet<>();
+
+            for(int i=0; i < str1.length()-1; i++){
+                String str = str1.substring(i, i+2).toUpperCase();
+                if(!str.matches("[A-Z]*") ) continue;
+                hm1.put(str, hm1.getOrDefault(str,0)+1);
+                union.add(str);
             }
-            else{//합집합
-                union.put(key,hm1.get(key));
+            for(int i=0; i < str2.length()-1; i++){
+                String str = str2.substring(i, i+2).toUpperCase();
+                if(!str.matches("[A-Z]*")) continue;
+                hm2.put(str, hm2.getOrDefault(str,0)+1);
             }
-        }
-        //합집합
-        for(String key : hm2.keySet()){
-            if(hm1.getOrDefault(key,0)== 0){
-                union.put(key,hm2.get(key));
+            
+            for(String str : hm2.keySet()){
+                if(union.add(str)){
+                    union.add(str);
+                }
+                else{//이미 존재한다면
+                    intersection.add(str);
+                }
             }
-        }
+                if(hm1.isEmpty() && hm2.isEmpty() || intersection.isEmpty() && union.isEmpty()) return 65536;
         
-        double up = 0.0;
-        double down = 0.0; 
-        for(String key : union.keySet()){
-            down += union.get(key);
-        }
-         for(String key : intersection.keySet()){
-            up += intersection.get(key);
-        }
-        double jak = 1; 
-        if(down != 0.0){
-            jak = up/down;
-        }
-        answer = (int)(jak*65536);
-        
+            //intersection
+            int up = 0;
+            for(String s : intersection){
+                up += Math.min(hm1.get(s), hm2.get(s));
+            }
+            
+            //union
+            int down = 0;
+            for(String s : union){
+                down += Math.max(hm1.getOrDefault(s, 0), hm2.getOrDefault(s, 0));
+            }
+            answer = (int)(((double)up/down)*65536);
         
         return answer;
-    }
+        }
 }

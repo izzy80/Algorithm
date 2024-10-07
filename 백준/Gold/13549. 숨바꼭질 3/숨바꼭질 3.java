@@ -1,55 +1,51 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
+import java.util.*;
+import java.io.*;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.StringTokenizer;
 
 public class Main {
-    static int N,K;
-    static int[] dist = new int[100001];
-
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+    static int ans = 0;
+    static boolean[] visited = new boolean[100000+1];
+    static int K;
+    public static void main(String[] args) throws IOException{
+        BufferedReader br  = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-
-        Arrays.fill(dist,-1);
-        N = Integer.parseInt(st.nextToken()); //수빈의 위치
+        int N = Integer.parseInt(st.nextToken()); //수빈이의 위치
         K = Integer.parseInt(st.nextToken()); //동생의 위치
-
         BFS(N);
 
-
+        System.out.println(ans);
     }
-
-    private static void BFS(int n) {
-        Queue<Integer> q = new LinkedList<>();
-        q.add(n);
-        dist[n] = 0;
+    static public void BFS(int N){
+        Queue<int[]> q = new LinkedList<>();
+        q.offer(new int[]{N, 0});
+        visited[N] = true;
 
         while(!q.isEmpty()){
-            int cl = q.poll();
-            if(cl == K) {
-                System.out.println(dist[cl]);
-                return;
+            int[] tmp  = q.poll();
+            int pos = tmp[0];
+            int time = tmp[1];
+
+
+            if(pos == K){
+                ans = time;
+                break;
             }
 
-            if(cl*2 <= 100000 &&dist[cl*2] == -1){
-                dist[cl*2] = dist[cl];
-                q.add(cl*2);
+            if(pos*2 <= 100000 && !visited[pos*2]){
+                q.offer(new int[]{pos*2, time});
+                visited[pos*2] = true;
             }
-            if(cl-1 >=0 &&dist[cl-1] == -1){
-                dist[cl-1] = dist[cl]+1;
-                q.add(cl-1);
+            if(pos-1 >= 0 && !visited[pos-1]){
+                q.offer(new int[]{pos-1, time+1});
+                visited[pos-1] = true;
             }
-            if(cl+1 <= 100000 &&dist[cl+1] == -1){
-                dist[cl+1] = dist[cl]+1;
-                q.add(cl+1);
+            if(pos+1 <= 100000 && !visited[pos+1]){
+                q.offer(new int[]{pos+1, time+1});
+                visited[pos+1] = true;
             }
-
         }
-
 
     }
 }

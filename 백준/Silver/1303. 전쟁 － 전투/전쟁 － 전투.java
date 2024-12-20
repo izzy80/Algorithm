@@ -1,68 +1,70 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
-
-/*
-W : 아군
-B : 적군
- */
-
+import java.util.*;
+import java.io.*;
 
 public class Main {
     static int N,M;
     static char[][] map;
     static boolean[][] visited;
-    static int[] mover = {-1,0,1,0};
-    static int[] movec = {0,1,0,-1};
-    static int whiteCnt, blueCnt;
+    static int w_cnt, b_cnt;
+    static int[] mover = {0,0,-1,1};
+    static int[] movec = {-1,1,0,0};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
 
-        map = new char[M][N];
-        visited = new boolean[M][N];
-        for(int i=0; i<M; i++){
+        M = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(st.nextToken());
+
+        map = new char[N][M];
+        for(int i=0; i <N; i++){
             String tmp = br.readLine();
-            for(int j=0; j< N; j++){
+            for(int j=0; j<M; j++){
                 map[i][j] = tmp.charAt(j);
             }
         }
-        int blueScore = 0;
-        int whiteScore = 0;
-        for(int i=0; i<M; i++){
-            for(int j=0; j<N; j++){
-                blueCnt = 0;
-                whiteCnt = 0;
-                if(!visited[i][j]) dfs(i,j);
-                blueScore += blueCnt*blueCnt;
-                whiteScore += whiteCnt*whiteCnt;
+
+        //solve
+        w_cnt = 0;
+        b_cnt = 0;
+        visited = new boolean[N][M];
+        for(int i=0; i<N; i++){
+            for(int j=0; j < M; j++){
+                if(!visited[i][j]) {
+                    visited[i][j] = true;
+                    int cnt = dfs(i,j,map[i][j]);
+                    if(map[i][j] == 'W'){
+                        w_cnt+=(int)Math.pow(cnt,2);
+                    }
+                    else{
+                        b_cnt += (int)Math.pow(cnt,2);
+                    }
+                }
             }
         }
 
-        System.out.println(whiteScore +" "+blueScore);
+        System.out.println(w_cnt+" "+b_cnt);
+
 
 
     }
 
-    private static void dfs(int r, int c) {
-        visited[r][c] = true;
-        if(map[r][c] == 'W') whiteCnt++;
-        else blueCnt++;
+    public static int dfs(int r, int c, char type){
+        int cnt = 1;
 
-        for(int m=0; m<4; m++){
+        for(int m=0;m<4; m++){
             int nr = r + mover[m];
             int nc = c + movec[m];
 
-            if(nr < 0 || nr >= M || nc <0 || nc >= N) continue;
+            if(nr < 0 || nr >= N || nc < 0 || nc >= M) continue;
             if(visited[nr][nc]) continue;
-            if(map[r][c] == 'W' && map[nr][nc] == 'W') dfs(nr,nc);
-            else if(map[r][c] == 'B' && map[nr][nc] == 'B') dfs(nr,nc);
+            if(type != map[nr][nc]) continue;
+
+            visited[nr][nc] = true;
+            cnt += dfs(nr,nc,type);
         }
+
+        return cnt;
 
     }
 }

@@ -1,46 +1,43 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-/*
-a : 97
-z : 122
- */
+import java.util.*;
+import java.io.*;
+
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
 
-        int answer =0;
-        for(int i=0; i< N; i++){
-            int[] alpha = new int[26];
-            boolean[] check = new boolean[26];
-
+        int answer = 0;
+        for(int i=0; i < N; i++){
             String str = br.readLine();
-      
-            boolean flag = true;
-            for(int j = 0; j < str.length(); j++){
-                char c = str.charAt(j); //a
-                int idx = c-97;
 
-                if(!check[idx]){//방문하지 않았다면
-                    alpha[idx] = j;
-                    check[idx] = true;
-                }
-                else{//방문했다면
-                    if(j - alpha[idx] > 1){ //1보다 크다는 것은 바로 옆에 있지 않다는 것
-                        flag = false;
-                        break;
-                    }
-                    else if(j - alpha[idx] == 1){ //1이라면
-                        alpha[idx] = j;
-                    }
-                }
-            }
-
-            if(flag){//flag가 true면 연속해서 문자가 나타남
+            if(check(str)){
                 answer++;
             }
         }
+
+        //출력
         System.out.println(answer);
+    }
+
+    static public boolean check(String str){
+        int[] alpha = new int[26];
+        int idx = (int)str.charAt(0)-'a';
+        alpha[idx] = 1;
+        for(int i=1; i < str.length(); i++){
+            int cur = (int)str.charAt(i)-'a';
+            if(str.charAt(i)!= str.charAt(i-1)){//앞이랑 달라
+                if(alpha[cur]!=0){//0이 아니야. 이미 앞에서 한 번 나옴
+                    //그룹 단어가 아님
+                    return false;
+                }
+                else{
+                    alpha[cur]++;
+                }
+            }
+            else{
+                alpha[cur]++;
+            }
+        }
+        return true;
     }
 }

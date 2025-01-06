@@ -1,41 +1,55 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
+	
+	// 자를 수 있는 선의 길이의 최대 길이를 찾는 메소드
+	private static long binary_search(long arr[], int N, long max) {
+		long half = 0;
+		long min = 1;
 
-        int K = Integer.parseInt(st.nextToken()); //랜선의 개수
-        long N = Integer.parseInt(st.nextToken()); //필요한 랜선의 개수
+		while(min <= max) {
+			half = (min + max)/2;
+			long count = 0;
 
-        long[] L = new long[K]; //랜선의 길이를 담은 배열
-        long max = 0;
-        for(int i=0; i <K; i++){
-            L[i] = Long.parseLong(br.readLine());
-            max = Math.max(max,L[i]);
-        }
+			for(long num : arr) {
+				count += num / half;
+			}
 
-        long start = 1;
-        long end = max;
+			// 원하는 랜선 갯수 보다 잘라진 랜선 수가 적을경우
+			// 하나의 랜선 길이가 길어서 길이를 더 짧게 만들어야 함 
+			// half보다 아래의 수.
+			if(count < N) {
+				max = half-1;
+			}
+			// 원하는 랜선 갯수 보다 잘라진 랜선 수가 많을경우
+			// 하나의 랜선 길이가 짧아서 더 길게 만들어야 함 
+			// half보다 위의 수에 있음.
+			else {
+				min = half+1;
+			}
+		}
+		return (max+min)/2;
+	}
 
-        while(start <= end){
-            long mid = (start + end)/2;
-            long sum =0;
-            for(int i=0; i < K; i++){
-                sum += L[i]/mid;
-            }
-//            System.out.println("cnt = "+cnt +", mid = "+mid);
-            if(sum < N){
-                end = mid-1;
-            }
-            else if(sum >= N){
-                start = mid+1;
-            }
-        }
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st = new StringTokenizer(br.readLine());
 
-        System.out.println(end);
-    }
+		int K = Integer.parseInt(st.nextToken());
+		int N = Integer.parseInt(st.nextToken());
+		long result = 0;
+		long max = 0;
+
+		long [] arr= new long[K];
+		for(int i=0; i<K; i++) {
+			arr[i] = Integer.parseInt(br.readLine());
+			max = Math.max(max, arr[i]);
+		}
+
+		result = binary_search(arr, N, max);
+
+		System.out.println(result);
+		br.close();
+	}
 }

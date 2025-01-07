@@ -1,77 +1,73 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.io.*;
+import java.util.*;
 
-/*
-필요한 배추흰지렁이 마리수
- */
 public class Main {
-    static StringTokenizer st;
-    static int M,N,K;
-    static boolean[][] map;
     static boolean[][] visited;
-    static int[] mover = {-1, 0, 1, 0};
-    static int[] movec = {0,1,0,-1};
-    public static void main(String[] args) throws IOException {
+    static int[][] graph;
+    static int N, M, answer = 0;
+
+    static int[] dx = {-1, 1, 0, 0}; // 상, 하, 좌, 우
+    static int[] dy = {0, 0, -1, 1};
+
+    public static void main(String[] args) throws Exception {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int T = Integer.parseInt(br.readLine());
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
 
-        for(int tc = 0; tc < T; tc ++){
-            st = new StringTokenizer(br.readLine());
-
-            M = Integer.parseInt(st.nextToken()); //가로길이 열
-            N = Integer.parseInt(st.nextToken()); //세로길이 행
-            K = Integer.parseInt(st.nextToken()); //배추가 심어진 위치
-
-            map = new boolean[N][M];
-            visited = new boolean[N][M]; //방문배열
-
-            int r, c;
-
-            for(int k = 0;  k < K; k++){
-                st = new StringTokenizer(br.readLine());
-                c = Integer.parseInt(st.nextToken());
-                r = Integer.parseInt(st.nextToken());
-
-                map[r][c] = true; //배추가 심어짐
+        int T = Integer.parseInt(st.nextToken());
+        for (int i = 0; i < T; i++) { // T번 반복
+            st = new StringTokenizer(br.readLine(), " ");
+            N = Integer.parseInt(st.nextToken());
+            M = Integer.parseInt(st.nextToken());
+            int K = Integer.parseInt(st.nextToken());
+            graph = new int[N][M];
+            visited = new boolean[N][M];
+            ArrayList<int[]> list = new ArrayList<>();
+            answer = 0;
+            for (int j = 0; j < K; j++) { // 양배추 K개의 위치
+                st = new StringTokenizer(br.readLine(), " ");
+                int X = Integer.parseInt(st.nextToken());
+                int Y = Integer.parseInt(st.nextToken());
+                graph[X][Y] = 1;
+                if (graph[X][Y] == 1) {
+                    list.add(new int[]{X, Y});
+                }
             }
+            for (int k = 0; k < list.size(); k++) {
+                int[] tmp = list.get(k);
+                int x = tmp[0];
+                int y = tmp[1];
+                if (!visited[x][y]) { // 이미 체크한 양배추가 아닐 경우에만 bfs메서드 실행
+                    bfs(x, y);
+                    answer++;
+                }
+            }
+            System.out.println(answer);
 
+        }
+        bw.flush();
+        bw.close();
+        br.close();
+    }
 
-            int cnt =0;
-            for(int i=0; i < N; i++){
-                for(int j=0; j <M; j++){
-                    if(!visited[i][j] && map[i][j]){//방문하지 않았고, 배추가 존재한다면
-                        dfs(i,j);
-                        cnt++;
+    static void bfs(int x, int y) {
+        visited[x][y] = true;
+        Queue<int[]> queue = new LinkedList<>();
+        queue.offer(new int[]{x, y});
+        while (!queue.isEmpty()) {
+            int[] tmp = queue.poll();
+            for (int i = 0; i < 4; i++) {
+                int nx = tmp[0] + dx[i];
+                int ny = tmp[1] + dy[i];
+                if (nx >= 0 && nx < N && ny >= 0 && ny < M) {
+                    if (graph[nx][ny] == 1) {
+                        if (!visited[nx][ny]) {
+                            visited[nx][ny] = true;
+                            queue.offer(new int[]{nx, ny});
+                        }
                     }
                 }
             }
-
-            System.out.println(cnt);
-
-
-        } //tc
-
-
-
-    }
-
-    private static void dfs(int r, int c) {
-//        System.out.println(r+ ", "+c);
-        visited[r][c] = true;
-
-        for(int m =0 ; m< 4; m++){
-            int nr = r + mover[m];
-            int nc = c + movec[m];
-
-            if(nr < 0 || nr >= N || nc < 0 || nc >= M) continue; //범위에 벗어난다면
-            if(visited[nr][nc] || !map[nr][nc]) continue; //이미 방문했다면
-            dfs(nr,nc);
         }
-
-
-
     }
 }

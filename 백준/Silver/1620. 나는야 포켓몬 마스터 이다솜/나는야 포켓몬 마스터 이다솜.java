@@ -1,36 +1,38 @@
-import java.util.HashMap;
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		int N = sc.nextInt();
-		int M = sc.nextInt();
-		HashMap<String, Integer> hm = new HashMap<>(); // key, value 
-		String[] arr = new String[N];
-		int idx =0; 
-		for(int i=0;i<N;i++) {
-			String s = sc.next();
-			hm.put(s, idx++);
-			arr[i] = s;
-		}
-		for(int i=0;i<M;i++) {
-			String str = sc.next();
-			if(isNumber(str)) {// 숫자일때
-				System.out.println(arr[Integer.parseInt(str)-1]);
-			}
-			else {//영어일때
-				System.out.println(hm.get(str)+1);
-				
-			}
-		}
-	}
-	public static boolean isNumber(String str) {
-		try {
-			Integer.parseInt(str);
-			return true;
-		}catch(NumberFormatException e) {
-			return false;
-		}
-	}
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+
+        int N = Integer.parseInt(st.nextToken()); //포켓몬의 개수
+        int M = Integer.parseInt(st.nextToken()); //맞춰야할 문제의 개수
+        String[] str = new String[N+1];
+        HashMap<String,Integer> hm = new HashMap<>();
+
+        for(int i=1; i <= N; i++){
+            String tmp = br.readLine();
+            str[i] = tmp;
+            hm.put(tmp, i);
+        }
+        StringBuilder sb = new StringBuilder();
+        for(int i=0; i < M; i++){
+            String word = br.readLine();
+
+            if(Character.isAlphabetic(word.charAt(0))){
+                //알파벳이면
+                sb.append(hm.get(word)).append("\n");
+            }
+            else{
+                //숫자면
+                int num = Integer.parseInt(word);
+                sb.append(str[num]).append("\n");
+            }
+        }
+
+        System.out.println(sb.toString());
+
+
+    }
 }

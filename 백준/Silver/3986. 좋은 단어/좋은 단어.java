@@ -1,55 +1,48 @@
-import java.awt.image.ImagingOpException;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Stack;
+import java.util.*;
+import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         int N = Integer.parseInt(br.readLine());
-        String[] words = new String[N];
-        //배열에 순서대로 넣어주기
-        for(int i=0; i<N; i++){
-            words[i] = br.readLine();
-        }
 
-        //좋은 단어 check
         int answer = 0;
         for(int i=0; i < N; i++){
-            String str = words[i];
+            String str = br.readLine();
+
             Stack<Character> st = new Stack<>();
-            for(int j=0; j < str.length(); j++){
+
+            for(int j =0; j < str.length(); j++){
+                char c = str.charAt(j);
                 if(st.isEmpty()){
-                    st.push(str.charAt(j));
+                    st.add(c);
                 }
                 else{
-                    if(st.peek()=='A'){
-                        if(str.charAt(j)=='A') {
+                    if(c == 'A'){
+                        if(st.peek() == 'A'){
                             st.pop();
                         }
                         else{
-                            st.push(str.charAt(j));
+                            st.add(c);
                         }
                     }
-                    else {//B라면
-                        if(str.charAt(j)=='B') {
+                    else{//B
+                        if(st.peek() == 'B'){
                             st.pop();
                         }
                         else{
-                            st.push(str.charAt(j));
+                            st.add(c);
                         }
                     }
                 }
             }
+
             if(st.isEmpty()){
                 answer++;
             }
         }
-        //답 출력
+
         System.out.println(answer);
-
-
 
     }
 }

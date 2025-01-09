@@ -1,103 +1,84 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
-/**
- * 토마토가 위치한 곳은 동시에 토마토가 익어야함.
- */
 public class Main {
-    static int N,M;
-    static int[][] map;
-    static int[][] dist;
-
-    static int[] mover = new int[]{-1,0,1,0};
-    static int[] movec = new int[]{0,-1,0,1};
-    static StringTokenizer st;
-    static int max;
-    static int zero;
+    static int N, M;
+    static int[][] tomato;
+    static int[] mover = {0,0,1,-1};
+    static int[] movec = {1,-1,0,0};
+    static int[][] visited;
+    static Queue<int[]> q = new LinkedList<>();
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
 
-        st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
+        StringTokenizer st = new StringTokenizer(br.readLine());
         M = Integer.parseInt(st.nextToken());
-        max = Integer.MIN_VALUE;
+        N = Integer.parseInt(st.nextToken());
 
-        map = new int[M][N];
-        dist= new int[M][N];
-        for(int i=0; i<M;i++){
-            Arrays.fill(dist[i],-1);
-        }
-        for(int i=0;i<M;i++){
+        tomato = new int[N][M];
+        for(int i=0; i < N; i++){
             st = new StringTokenizer(br.readLine());
-            for(int j=0;j<N;j++){
-                map[i][j]= Integer.parseInt(st.nextToken());
+            for(int j=0; j < M; j++){
+                tomato[i][j] = Integer.parseInt(st.nextToken());
             }
         }
 
-//        System.out.println(Arrays.deepToString(map));
+        visited = new int[N][M];
+        for(int i=0; i < N; i++){
+            for(int j=0; j < M; j++){
+                if(tomato[i][j] == 1){
+                    q.add(new int[]{i,j});
+                    visited[i][j] = 1;
+                }
+                if(tomato[i][j] == -1){
+                    visited[i][j] = -1;
+                }
+            }
+        }
+
+
+
         BFS();
 
+//        System.out.println(Arrays.deepToString(visited));
 
+        // check
+        int ans = 0;
 
-        int nam = 0; //남은 토마토
-        for(int i=0; i< M;i++){
-            for(int j=0; j <N; j++){
-                if(map[i][j] == 0){
-                    nam++;
+        outer : for(int i=0; i < N; i++){
+            for(int j=0; j < M; j++){
+                if(visited[i][j] == 0){
+                    ans = -1;
+                    break outer;
                 }
+                else{
+                    ans = Math.max(ans, visited[i][j]);
+                }
+
             }
         }
 
-       if(nam>0){
-//            System.out.println(nam);
-            System.out.println(-1);
-        }
-        else{
-            for(int i=0; i<M;i++){
-                for(int j=0; j <N;j++){
-                    max = Integer.max(dist[i][j],max);
-                }
-            }
-            System.out.println(max);
-        }
 
+        //출력
+        System.out.println(ans==-1?ans:ans-1);
     }
 
-    private static void BFS() {
-        Queue<int[]> q = new LinkedList<>();
-
-        for(int i=0; i< M;i++){
-            for(int j=0; j <N; j++){
-                if(map[i][j] == 1){
-                    q.add(new int[]{i,j});
-                    dist[i][j] = 0;
-                }
-            }
-        }
+    public static void BFS(){
 
         while(!q.isEmpty()){
             int[] tmp = q.poll();
-            int cr = tmp[0];
-            int cc = tmp[1];
 
-            for(int m =0; m< 4;m++){
-                int nr = cr + mover[m];
-                int nc = cc + movec[m];
+            for(int m=0; m<4; m++){
+                int nr = tmp[0]+mover[m];
+                int nc = tmp[1]+movec[m];
 
-                if(nr < 0 || nr >= M || nc < 0 || nc >= N) continue;
-                if(dist[nr][nc]!=-1) continue;
-                if(map[nr][nc] == 0){
-                    map[nr][nc] = 1;
-                    dist[nr][nc] = dist[cr][cc]+1;
+                if(nr <0 || nr >= N || nc < 0 || nc >= M) continue;
+                if(visited[nr][nc] != 0) continue;
+                if(tomato[nr][nc] == 0){
                     q.add(new int[]{nr,nc});
+                    visited[nr][nc] = visited[tmp[0]][tmp[1]]+1;
                 }
             }
         }
-
     }
 }

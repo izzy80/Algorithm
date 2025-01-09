@@ -1,71 +1,81 @@
-import java.io.*;
 import java.util.*;
+import java.io.*;
 
 public class Main {
+    static int M,N,K;
+    static int[][] map;
+    static int[] mover = {0,0,-1,1};
+    static int[] movec = {-1,1,0,0};
     static boolean[][] visited;
-    static int[][] graph;
-    static int N, M, answer = 0;
+    static int ans;
 
-    static int[] dx = {-1, 1, 0, 0}; // 상, 하, 좌, 우
-    static int[] dy = {0, 0, -1, 1};
-
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-        StringTokenizer st = new StringTokenizer(br.readLine(), " ");
 
-        int T = Integer.parseInt(st.nextToken());
-        for (int i = 0; i < T; i++) { // T번 반복
-            st = new StringTokenizer(br.readLine(), " ");
-            N = Integer.parseInt(st.nextToken());
+        int T = Integer.parseInt(br.readLine());
+        StringTokenizer st;
+        StringBuilder sb = new StringBuilder();
+
+        for(int tc = 0; tc < T; tc++){
+            ans = 0;
+            st = new StringTokenizer(br.readLine());
+
             M = Integer.parseInt(st.nextToken());
-            int K = Integer.parseInt(st.nextToken());
-            graph = new int[N][M];
+            N = Integer.parseInt(st.nextToken());
+            K = Integer.parseInt(st.nextToken());
+
+            map = new int[N][M];
             visited = new boolean[N][M];
-            ArrayList<int[]> list = new ArrayList<>();
-            answer = 0;
-            for (int j = 0; j < K; j++) { // 양배추 K개의 위치
-                st = new StringTokenizer(br.readLine(), " ");
-                int X = Integer.parseInt(st.nextToken());
-                int Y = Integer.parseInt(st.nextToken());
-                graph[X][Y] = 1;
-                if (graph[X][Y] == 1) {
-                    list.add(new int[]{X, Y});
+
+            //map에 배추 심기
+            for(int i=0; i < K; i++){
+                st = new StringTokenizer(br.readLine());
+                int c =  Integer.parseInt(st.nextToken());
+                int r =  Integer.parseInt(st.nextToken());
+                map[r][c] = 1;
+            }
+
+            // bfs 돌리기
+            for(int i=0; i < N; i++){
+                for(int j=0; j < M; j++){
+                    if(map[i][j] == 1 && !visited[i][j]){
+                        BFS(i,j);
+                        ans++;
+                    }
                 }
             }
-            for (int k = 0; k < list.size(); k++) {
-                int[] tmp = list.get(k);
-                int x = tmp[0];
-                int y = tmp[1];
-                if (!visited[x][y]) { // 이미 체크한 양배추가 아닐 경우에만 bfs메서드 실행
-                    bfs(x, y);
-                    answer++;
-                }
-            }
-            System.out.println(answer);
+
+            sb.append(ans).append("\n");
 
         }
-        bw.flush();
-        bw.close();
-        br.close();
+
+
+
+        System.out.println(sb.toString());
+
+
+
     }
 
-    static void bfs(int x, int y) {
-        visited[x][y] = true;
-        Queue<int[]> queue = new LinkedList<>();
-        queue.offer(new int[]{x, y});
-        while (!queue.isEmpty()) {
-            int[] tmp = queue.poll();
-            for (int i = 0; i < 4; i++) {
-                int nx = tmp[0] + dx[i];
-                int ny = tmp[1] + dy[i];
-                if (nx >= 0 && nx < N && ny >= 0 && ny < M) {
-                    if (graph[nx][ny] == 1) {
-                        if (!visited[nx][ny]) {
-                            visited[nx][ny] = true;
-                            queue.offer(new int[]{nx, ny});
-                        }
-                    }
+    public static void BFS(int r, int c){
+        Queue<int[]> q = new LinkedList<>();
+        q.add(new int[]{r,c});
+        visited[r][c] = true;
+
+        while (!q.isEmpty()) {
+            int[] tmp = q.poll();
+            int cr = tmp[0];
+            int cc = tmp[1];
+
+            for(int m=0; m < 4; m++){
+                int nr = cr+mover[m];
+                int nc = cc+movec[m];
+
+                if(nr < 0 || nr >= N || nc < 0 ||nc >= M) continue;
+                if(visited[nr][nc]) continue;
+                if(map[nr][nc] == 1){
+                    q.add(new int[]{nr,nc});
+                    visited[nr][nc] = true;
                 }
             }
         }

@@ -1,92 +1,74 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int M,N;
-    static int[] mover = {1,-1,0,0};
-    static int[] movec = {0,0,1,-1};
-    static int[][] map;
-    static int areaCount = 0;
-    static boolean[][] visited;
-    static ArrayList<Integer> result = new ArrayList<>();
-
-
-
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        M = Integer.parseInt(st.nextToken()); //5
-        N = Integer.parseInt(st.nextToken()); //7
-        int K = Integer.parseInt(st.nextToken());
-
-        map = new int[M][N];
-        visited = new boolean[M][N];
-
-        //map만들기
-        for(int i=0; i < K; i++){
-            st = new StringTokenizer(br.readLine());
-            int x1 = Integer.parseInt(st.nextToken());
-            int y1 = Integer.parseInt(st.nextToken());
-            int x2 = Integer.parseInt(st.nextToken());
-            int y2 = Integer.parseInt(st.nextToken());
-
-
-            for(int j=y1; j<y2; j++){
-                for(int k=x1; k<x2; k++){
-                    map[j][k] = 1;
-                }
-            }
-        }
-//        System.out.println(Arrays.deepToString(map));
-
-        //BFS
-        for(int i=0; i<M; i++){
-            for(int j=0; j < N; j++){
-                if(map[i][j]==0 && !visited[i][j]){
-                    //map이 0이면서 방문하지 않은 곳
-                    BFS(i,j);
-                    areaCount++; //BFS가 돌아갈 때마다 cnt증가.
-                }
-            }
-        }
-
-        System.out.println(areaCount);
-        Collections.sort(result);
-        StringBuilder sb = new StringBuilder();
-        for (Integer i : result) {
-            sb.append(i).append(" ");
-        }
-        System.out.println(sb.toString());
-    }
-
-    private static void BFS(int i, int j) {
-        int area = 1;
-        Queue<int[]> q = new LinkedList<>();
-        q.add(new int[]{i,j});
-        visited[i][j] = true; //방문처리
-
-        while(!q.isEmpty()){
-            int[] tmp = q.poll();
-            int r = tmp[0];
-            int c = tmp[1];
-
-            for(int m=0; m <4; m++){
-                int nr = r + mover[m];
-                int nc = c + movec[m];
-
-                if(nr < 0 || nr >= M || nc < 0 || nc >= N) continue;
-                if(map[nr][nc]==1 || visited[nr][nc]) continue;
-                //map=1면 선택X. visited=true면 이미 방문
-                q.add(new int[]{nr,nc});
-                visited[nr][nc] = true;
-                area++;
-            }
-
-        }
-
-        result.add(area);
-
-    }
+	
+	static int M, N, K;
+	static int[][] ddang;
+	static int[] dx = {0,0,-1,1};
+	static int[] dy = {-1,1,0,0};
+	static int size;
+	static ArrayList<Integer> result;
+	public static void main(String[] args) throws IOException{
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		
+		M = Integer.parseInt(st.nextToken()); //y축
+		N = Integer.parseInt(st.nextToken()); //x축
+		K = Integer.parseInt(st.nextToken());
+		
+		ddang = new int[M][N]; //행(y인 M) 열(y인 N)
+		result = new ArrayList<>();
+		
+		for(int i=0;i<K;i++) {
+			st = new StringTokenizer(br.readLine());
+			int x1 = Integer.parseInt(st.nextToken());
+			int y1 = Integer.parseInt(st.nextToken());
+			int x2 = Integer.parseInt(st.nextToken());
+			int y2 = Integer.parseInt(st.nextToken());
+			
+			for(int y=y1;y<y2;y++) {
+				for(int x=x1;x<x2;x++) {
+					ddang[y][x] = 1; //한칸씩 색칠해준다
+				}
+			}
+		}
+		
+		for(int i=0;i<M;i++) {
+			for(int j=0;j<N;j++) {
+				if(ddang[i][j] == 0) {
+					size=1;
+					dfs(i, j);
+					result.add(size);
+				}
+			}
+		}
+		
+		Collections.sort(result);
+		
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append(result.size()+"\n");
+		for(int r : result) {
+			sb.append(r+" ");
+		}
+		bw.write(sb+"");
+		bw.flush();
+		bw.close();
+	}
+	
+	public static void dfs(int y, int x) {
+		ddang[y][x] = 1; //visited를 따로 만들어주지 않고, 들어왔음을 1로 표시했다.
+		
+		for(int i=0;i<4;i++) {
+			int nx = dx[i]+x;
+			int ny = dy[i]+y;
+			
+			if(nx>=0 && ny >=0 && nx<N && ny<M && ddang[ny][nx]==0) {
+				size++;
+				dfs(ny,nx);
+			}
+		}
+	}
 }

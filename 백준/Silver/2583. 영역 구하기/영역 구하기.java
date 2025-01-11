@@ -2,73 +2,86 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-	
-	static int M, N, K;
-	static int[][] ddang;
-	static int[] dx = {0,0,-1,1};
-	static int[] dy = {-1,1,0,0};
-	static int size;
-	static ArrayList<Integer> result;
-	public static void main(String[] args) throws IOException{
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
-		StringTokenizer st = new StringTokenizer(br.readLine());
-		
-		M = Integer.parseInt(st.nextToken()); //y축
-		N = Integer.parseInt(st.nextToken()); //x축
-		K = Integer.parseInt(st.nextToken());
-		
-		ddang = new int[M][N]; //행(y인 M) 열(y인 N)
-		result = new ArrayList<>();
-		
-		for(int i=0;i<K;i++) {
-			st = new StringTokenizer(br.readLine());
-			int x1 = Integer.parseInt(st.nextToken());
-			int y1 = Integer.parseInt(st.nextToken());
-			int x2 = Integer.parseInt(st.nextToken());
-			int y2 = Integer.parseInt(st.nextToken());
-			
-			for(int y=y1;y<y2;y++) {
-				for(int x=x1;x<x2;x++) {
-					ddang[y][x] = 1; //한칸씩 색칠해준다
-				}
-			}
-		}
-		
-		for(int i=0;i<M;i++) {
-			for(int j=0;j<N;j++) {
-				if(ddang[i][j] == 0) {
-					size=1;
-					dfs(i, j);
-					result.add(size);
-				}
-			}
-		}
-		
-		Collections.sort(result);
-		
-		StringBuilder sb = new StringBuilder();
-		
-		sb.append(result.size()+"\n");
-		for(int r : result) {
-			sb.append(r+" ");
-		}
-		bw.write(sb+"");
-		bw.flush();
-		bw.close();
-	}
-	
-	public static void dfs(int y, int x) {
-		ddang[y][x] = 1; //visited를 따로 만들어주지 않고, 들어왔음을 1로 표시했다.
-		
-		for(int i=0;i<4;i++) {
-			int nx = dx[i]+x;
-			int ny = dy[i]+y;
-			
-			if(nx>=0 && ny >=0 && nx<N && ny<M && ddang[ny][nx]==0) {
-				size++;
-				dfs(ny,nx);
-			}
-		}
-	}
+    static int M, N, K;
+    static int[][] map;
+    static boolean[][] visited;
+    static int[] mover = {0,0,-1,1};
+    static int[] movec = {-1,1,0,0};
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        M = Integer.parseInt(st.nextToken()); //5
+        N = Integer.parseInt(st.nextToken()); //7
+        map = new int[M][N];
+
+        K = Integer.parseInt(st.nextToken());
+        for(int i=0; i <K; i++){
+            //왼쪽아래 x,y
+            //오른쪽 위 x,y
+            st = new StringTokenizer(br.readLine());
+            int left_x = Integer.parseInt(st.nextToken());
+            int left_y = Integer.parseInt(st.nextToken());
+            int right_x = Integer.parseInt(st.nextToken());
+            int right_y = Integer.parseInt(st.nextToken());
+
+            for(int j=M-right_y; j < M-left_y; j++){
+                for(int k = left_x; k <right_x ; k++){
+                    map[j][k] = 1;  //칠해진 곳
+                }
+            }
+        }
+
+        //solve 분리된 영역, 넓이가 얼마? 넓이 순으로 오름차순
+        int cnt = 0;
+        ArrayList<Integer> size = new ArrayList<>();
+        visited = new boolean[M][N];
+        for(int i=0; i < M; i++){
+            for(int j=0; j < N; j++){
+                if(map[i][j] == 0 && !visited[i][j]){
+                    int new_size = bfs(i,j);
+                    cnt++;
+                    size.add(new_size);
+                }
+            }
+        }
+
+        //오름차순으로 정렬
+        Collections.sort(size);
+
+        //print
+        System.out.println(cnt);
+        StringBuilder sb = new StringBuilder();
+        for(int value : size){
+            sb.append(value).append(" ");
+        }
+        System.out.println(sb.toString());
+    }
+
+    public static int bfs(int r, int c){
+        int ss = 1;
+        Queue<int[]> q = new LinkedList<>();
+        q.add(new int[]{r,c});
+        visited[r][c] = true;
+
+        while(!q.isEmpty()){
+            int[] tmp = q.poll();
+            int cr = tmp[0];
+            int cc = tmp[1];
+
+            for(int m=0; m <4; m++){
+                int nr = cr+mover[m];
+                int nc = cc+movec[m];
+
+                if(nr < 0 || nr >= M || nc < 0 || nc >= N) continue;
+                if(visited[nr][nc]) continue;
+                if(map[nr][nc] == 1) continue;
+                q.add(new int[]{nr,nc});
+                visited[nr][nc] = true;
+                ss++;
+            }
+        }
+
+        return ss; //사이즈 리턴
+    }
 }

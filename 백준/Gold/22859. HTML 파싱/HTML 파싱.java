@@ -2,57 +2,50 @@ import java.io.*;
 
 public class Main {
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in), 65536); // 입력 버퍼 크기 증가
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out), 65536); // 출력 버퍼 크기 증가
 
-        String html = br.readLine();
+        String input = br.readLine();
+        if (!input.startsWith("<main>") || !input.endsWith("</main>")) return;
 
-        // ✅ 1. <main> 태그 제거 (예외 방지)
-        if (html.startsWith("<main>") && html.endsWith("</main>")) {
-            html = html.substring(6, html.length() - 7); // "<main>" (6글자), "</main>" (7글자) 제거
-        } else {
-            return; // 잘못된 입력 방지
-        }
-
-        // ✅ 2. 한 번만 HTML을 순회하며 처리 (O(N) 알고리즘)
+        char[] html = input.toCharArray();
         StringBuilder result = new StringBuilder();
-        boolean inTag = false, inDiv = false, inP = false, spaceFlag = false;
         StringBuilder title = new StringBuilder();
-        int i = 0;
+        boolean inTag = false, inDiv = false, inP = false, spaceFlag = false;
 
-        while (i < html.length()) {
-            char c = html.charAt(i);
+        int i = 6; // "<main>" 이후부터 시작
+        while (i < html.length - 7) { // "</main>" 전까지 처리
+            char c = html[i];
 
             // 🔹 1. <div title="..."> 처리
-            if (html.startsWith("<div title=\"", i)) {
+            if (input.startsWith("<div title=\"", i)) {
                 inDiv = true;
                 i += 12; // "<div title=" (12글자)
-                while (i < html.length() && html.charAt(i) != '"') {
-                    title.append(html.charAt(i));
-                    i++;
+                while (i < html.length && html[i] != '"') {
+                    title.append(html[i++]);
                 }
                 result.append("title : ").append(title).append("\n");
                 title.setLength(0); // title 초기화
-                i++; // " 넘어가기
+                i++; // '"' 넘기기
                 continue;
             }
 
-            // 🔹 2. </div> 닫는 태그 처리
-            if (html.startsWith("</div>", i)) {
+            // 🔹 2. </div> 태그 처리
+            if (input.startsWith("</div>", i)) {
                 inDiv = false;
-                i += 6; // "</div>" 길이
+                i += 6;
                 continue;
             }
 
             // 🔹 3. <p> 태그 처리 (문장 시작)
-            if (html.startsWith("<p>", i)) {
+            if (input.startsWith("<p>", i)) {
                 inP = true;
                 i += 3;
                 continue;
             }
 
             // 🔹 4. </p> 태그 처리 (문장 끝)
-            if (html.startsWith("</p>", i)) {
+            if (input.startsWith("</p>", i)) {
                 inP = false;
                 result.append("\n");
                 i += 4;
@@ -70,7 +63,6 @@ public class Main {
 
             // 🔹 6. 본문 내용 저장 (태그가 아닐 때)
             if (!inTag && inDiv && inP) {
-                // 공백 처리: 연속된 공백을 하나로 변환
                 if (c == ' ') {
                     if (!spaceFlag) {
                         result.append(' ');

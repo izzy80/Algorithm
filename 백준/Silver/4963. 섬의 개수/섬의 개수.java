@@ -1,63 +1,88 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int W, H;
-    static int[][] map;
+	static int arr[][];
+	static boolean visit[][];
+	static int dirX[] = {0, 0, -1 ,1, -1, 1, -1, 1}; // 상 하 좌 우 대각선 상좌, 상우, 하좌, 하우
+	static int dirY[] = {-1, 1, 0, 0, 1, 1, -1, -1}; // 상 하 좌 우 대각선 상좌, 상우, 하좌, 하우
 
-    static int[] mover = {-1, 1, 0, 0,-1,-1,1,1};
-    static int[] movec = {0, 0, -1, 1,-1,1,-1,1};
-    static boolean[][] visited;
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	static int w, h, nowX, nowY;
 
-        while (true){
-            StringTokenizer st = new StringTokenizer(br.readLine());
-            W = Integer.parseInt(st.nextToken());
-            H = Integer.parseInt(st.nextToken());
+	static class Node {
+		int x;
+		int y;
 
-            if(W ==0 && H == 0) break;
+		public Node(int x, int y) {
+			this.x = x;
+			this.y = y;
+		}
+	}
 
-            map = new int[H][W];
-            visited = new boolean[H][W];
+	public static void main(String[] args) throws Exception {
+		StringBuilder sb = new StringBuilder();
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		StringTokenizer st;
 
-            for(int i=0; i< H; i++){
-                st  = new StringTokenizer(br.readLine());
-                for(int j=0; j < W; j++){
-                    map[i][j] = Integer.parseInt(st.nextToken());
-                }
-            }
+		String str = " ";
+		while( !(str = br.readLine()).equals("0 0") ) {
+			st = new StringTokenizer(str);
 
-            int cnt =0;
-            for(int i=0; i< H; i++){
-                for(int j=0; j < W; j++){
-                    if(map[i][j] == 1 && !visited[i][j]){ //땅
-                        dfs(i,j);
-                        cnt++;
-                    }
-                }
-            }
 
-            System.out.println(cnt);
-        }
+			w = Integer.parseInt(st.nextToken()); // 너비
+			h = Integer.parseInt(st.nextToken()); // 높이
+			arr = new int[h][w];
+			visit = new boolean[h][w];
 
-    }
+			for(int i=0; i<h; i++) {
+				st = new StringTokenizer(br.readLine());
 
-    private static void dfs(int r, int c) {
-        visited[r][c] = true;
+				for(int j=0; j<w; j++) {
+					arr[i][j] = Integer.parseInt(st.nextToken());
 
-        for(int m=0; m< 8; m++){
-            int nr = r + mover[m];
-            int nc = c + movec[m];
+				}
+			}
 
-            if(nr < 0 || nr >= H || nc <0 || nc >= W) continue;
-            if(visited[nr][nc] || map[nr][nc] == 0) continue;
-            dfs(nr, nc);
-        }
+			int island_count = 0;
+			for(int i=0; i<h; i++) {
+				for(int j=0; j<w; j++) {
+					
+					if(!visit[i][j] && arr[i][j] == 1) {
+						BFS(i, j);
+						island_count++;
+					}
+				}
+			} 
 
-    }
-}
+			sb.append(island_count).append('\n');
+		}
+
+		System.out.println(sb);
+	} // End of main
+	
+	static void BFS(int x, int y) {
+		Queue<Node> que = new LinkedList<Node>();
+		visit[x][y] = true;
+		que.offer(new Node(x, y));
+		
+		while( !que.isEmpty() ) {
+			Node node = que.poll();
+		
+			for(int i=0; i<8; i++) {
+				nowX = dirX[i] + node.x;
+				nowY = dirY[i] + node.y;
+
+				if(range_check() && !visit[nowX][nowY] && arr[nowX][nowY] == 1) {
+					visit[nowX][nowY] = true;
+					que.offer(new Node(nowX, nowY));
+				}
+			}
+		}
+
+	} // End of BFS;
+
+	static boolean range_check() {
+		return (nowX >= 0 && nowY >= 0 && nowX < h && nowY < w);
+	} // End of range_check
+	
+} // End of Main class

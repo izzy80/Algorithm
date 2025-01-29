@@ -1,65 +1,74 @@
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Scanner;
-
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.util.StringTokenizer;
+ 
 public class Main {
-	static int N,M;
-	static int[][] map;
-	
-	static Queue<Integer> q;
-	static int sum;
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		N = sc.nextInt(); // 유저의 수
-		M = sc.nextInt(); // 친구 관계의 수 
-		map = new int[N+1][N+1];
-		for(int i=0;i<M;i++) {
-			int a = sc.nextInt();
-			int b = sc.nextInt();
-			
-			map[a][b] = 1;
-			map[b][a] = 1;
-		}
-		
-		
-		q = new LinkedList<>();
-		int min = Integer.MAX_VALUE;
-		int answer = 0;	
-		
-		for(int i=1;i<=N;i++) {
-			sum =0; 
-			BFS(i);
-			if(min>sum) {
-				min = sum;
-				answer = i;
-			}
-			
-		}
-		
-		System.out.println(answer);
-		
-	}
-	private static void BFS(int v) {
-		boolean[] visited = new boolean[N+1];
-		int[] dist = new int[N+1];
-		
-		q.add(v);
-		visited[v] = true;
-
-		while(!q.isEmpty()) {
-			int curr = q.poll();
-
-			for(int i=1;i<=N;i++) {
-				if(!visited[i] && map[curr][i] == 1) {
-					q.add(i);
-					visited[i] = true;
-					dist[i] = dist[curr]+1;
-				}
-			}
-		}
-		for(int i=1;i<=N;i++) {
-			sum+=dist[i];
-		}
-	}
+    static final int INF = 987654321;
+ 
+    public static void main(String[] args) throws NumberFormatException, IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(System.out));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+ 
+        int N = Integer.parseInt(st.nextToken());
+        int M = Integer.parseInt(st.nextToken());
+        int[][] arr = new int[N + 1][N + 1];
+ 
+        // 초기값 설정
+        for (int i = 1; i <= N; i++) {
+            for (int j = 1; j <= N; j++) {
+                arr[i][j] = INF;
+ 
+                if (i == j) {
+                    arr[i][j] = 0;
+                }
+            }
+        }
+        
+        // 간선의 방향이 양방향이어야 함.
+        for (int i = 0; i < M; i++) {
+            st = new StringTokenizer(br.readLine());
+            int x = Integer.parseInt(st.nextToken());
+            int y = Integer.parseInt(st.nextToken());
+ 
+            arr[x][y] = arr[y][x] = 1;
+        }
+ 
+        // 플로이드 와샬 알고리즘
+        for (int k = 1; k <= N; k++) {
+            for (int i = 1; i <= N; i++) {
+                for (int j = 1; j <= N; j++) {
+                    // 최단경로 초기화
+                    if (arr[i][j] > arr[i][k] + arr[k][j]) {
+                        arr[i][j] = arr[i][k] + arr[k][j];
+                    }
+                }
+            }
+        }
+ 
+        int res = INF;
+        int idx = -1;
+ 
+        // 케빈 베이컨의 수가 가장 작은 인덱스를 탐색
+        for (int i = 1; i <= N; i++) {
+            int total = 0;
+            for (int j = 1; j <= N; j++) {
+                total += arr[i][j];
+            }
+ 
+            if (res > total) {
+                res = total;
+                idx = i;
+            }
+        }
+ 
+        bw.write(idx + "\n");
+        bw.flush();
+        bw.close();
+        br.close();
+    }
+ 
 }

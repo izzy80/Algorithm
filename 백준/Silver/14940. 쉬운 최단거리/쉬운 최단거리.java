@@ -1,81 +1,80 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-    static int N,M;
-    static int[][] map;
-    static boolean[][] visited;
-    static int[][] answer;
-    static int[] mover = {-1, 1, 0, 0};
-    static int[] movec = {0, 0, -1, 1};
+    private final static int[] DX = { 1, 0, -1, 0 };
+    private final static int[] DY = { 0, -1, 0, 1 };
+    private static int[][] map, distance;
+    private static int m, n;
+    private static boolean[][] isVisited;
+    
     public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
-        map = new int[N][M];
-        answer = new int[N][M];
-        visited = new boolean[N][M];
-
-        int sr = 0;
-        int sc = 0;
-        for(int i=0; i< N; i++){
-            st = new StringTokenizer(br.readLine());
-            for(int j=0; j < M; j++){
-                int tmp = Integer.parseInt(st.nextToken());
-                if(tmp == 2){
-                    sr = i;
-                    sc = j;
-                }
-                map[i][j] = tmp;
-            }
-        }
-
-        BFS(sr,sc);
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        StringBuilder builder = new StringBuilder();
+        boolean isStartChecked = false;
+        String[] size = reader.readLine().split(" ");
+        n = Integer.parseInt(size[0]);
+        m = Integer.parseInt(size[1]);
+        int startX = -1, startY = -1;
         
-        for(int i=0; i< N; i++){
-            for(int j=0; j < M; j++){
-                if(!visited[i][j] && map[i][j] != 0){
-                    answer[i][j] = -1;
-                }
-            }
+        map = new int[n][m];
+        distance = new int[n][m];
+        isVisited = new boolean[n][m];
+        
+        for (int i = 0; i < n; i++) {
+            map[i] = Arrays.stream(reader.readLine().split(" ")).mapToInt(Integer::parseInt).toArray();
+            if (!isStartChecked) 
+                for (int j = 0; j < m; j++) 
+                    if (map[i][j] == 2) {
+                        isStartChecked = true;
+                        startX = i;
+                        startY = j;
+                        break;
+                    }
         }
-        StringBuilder sb = new StringBuilder();
-
-        for(int i=0; i< N; i++){
-            for(int j=0; j < M; j++){
-                sb.append(answer[i][j]).append(" ");
-            }
-            sb.append("\n");
+        
+        bfs(startX, startY);
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) 
+                if (!isVisited[i][j] && map[i][j] == 1)
+                    builder.append(-1 + " ");
+                else 
+                    builder.append(distance[i][j] + " ");
+            builder.append("\n");
         }
-
-        System.out.println(sb.toString());
+        
+        System.out.print(builder.toString());
     }
-
-    private static void BFS(int r, int c) {
-        Queue<int[]> q = new LinkedList<>();
-        q.add(new int[]{r, c});
+    
+    private static void bfs(int x, int y) {
+        Queue<Point> queue = new LinkedList<>();
+        queue.add(new Point(x, y));
+        isVisited[x][y] = true;
         
-        visited[r][c] = true;
+        while (!queue.isEmpty()) {
+            Point current = queue.poll();
 
-        while(!q.isEmpty()){
-            int[] tmp = q.poll();
+            for (int i = 0; i < 4; i++) {
+                int nextX = current.x + DX[i];
+                int nextY = current.y + DY[i];
+                
+                if (nextX < 0 || nextY < 0 || nextX >= n || nextY >= m) continue;
+                if (map[nextX][nextY] == 0) continue;
+                if (isVisited[nextX][nextY]) continue;
 
-            for(int m=0; m <4; m++){
-                int nr = tmp[0] + mover[m];
-                int nc = tmp[1] + movec[m];
-
-                if(nr <0 || nr >= N || nc < 0 || nc >= M ) continue;
-                if(visited[nr][nc] || map[nr][nc] == 0) continue; //이미 방문한 곳과 0인곳은 지나가기
-                answer[nr][nc] = answer[tmp[0]][tmp[1]]+1;
-                visited[nr][nc] = true;
-                q.add(new int[]{nr, nc});
+                queue.add(new Point(nextX, nextY));
+                distance[nextX][nextY] = distance[current.x][current.y] + 1;
+                isVisited[nextX][nextY] = true;
             }
         }
+    }
+}
+
+class Point {
+    public int x, y;
+    public Point(int x, int y) {
+        this.x = x;
+        this.y = y;
     }
 }

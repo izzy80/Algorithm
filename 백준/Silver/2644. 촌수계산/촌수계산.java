@@ -1,47 +1,61 @@
 import java.util.*;
 import java.io.*;
 
-
+/**
+ * 촌수 계산하기
+ */
 public class Main {
     static int N;
-    static int end;
-    static ArrayList<Integer>[] graph;
-    static int ans;
+    static int A, B; //서로 다른 두 사람
+    static int M;
+    static ArrayList<Integer>[] family;
+    static boolean[] visited;
+    static int answer = -1;
+
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(br.readLine());
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        int start = Integer.parseInt(st.nextToken());
-        end = Integer.parseInt(st.nextToken());
+        N = Integer.parseInt(br.readLine()); //전체 사람의 수
 
-        int M = Integer.parseInt(br.readLine());
-        graph = new ArrayList[N+1];
-        for(int i=1; i <= N; i++){
-            graph[i] = new ArrayList<>();
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        A = Integer.parseInt(st.nextToken());
+        B = Integer.parseInt(st.nextToken());
+
+        family = new ArrayList[N+1];
+        visited = new boolean[N+1];
+
+        for(int i=1; i <=N; i++){
+            family[i] = new ArrayList<Integer>();
         }
-        boolean[] visited = new boolean[N+1];
-        for(int i=0; i < M; i++){
+
+        M = Integer.parseInt(br.readLine());
+        for(int i=0; i < M ; i++){
             st = new StringTokenizer(br.readLine());
-            int x = Integer.parseInt(st.nextToken());
-            int y = Integer.parseInt(st.nextToken());
-            graph[x].add(y);
-            graph[y].add(x);
+            int parent = Integer.parseInt(st.nextToken());
+            int child = Integer.parseInt(st.nextToken());
+
+            family[parent].add(child);
+            family[child].add(parent);
         }
-        ans = 0;
-        DFS(start, visited, 0);
-        System.out.println(ans == 0 ? -1 : ans);
+
+        //solve
+        dfs(A,0);
+
+        //print
+        System.out.println(answer);
     }
-    static public void DFS(int idx, boolean[] visited, int depth){
-        if(idx == end){
-            ans = depth;
+
+    public static void dfs(int idx, int depth){
+        if(idx == B){
+            answer = depth;
             return;
         }
-        visited[idx] = true;
-        for(int next : graph[idx]){
-            if(visited[next]) continue;
-            DFS(next, visited, depth+1);
-            visited[next] = false;
-        }
 
+        visited[idx] = true;
+
+        for(int i : family[idx]){
+            if(visited[i]) continue;
+            visited[i] = true;
+            dfs(i, depth+1);
+        }
     }
 }

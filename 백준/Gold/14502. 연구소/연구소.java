@@ -45,7 +45,7 @@ public class Main {
     public static void dfs(int depth){
         if(depth == 3){
             //BFS돌려서 바이러스 퍼트리기
-            q = new LinkedList<>();
+            q = new ArrayDeque<>();
             visited = new boolean[N][M];
             for(int i=0; i < N; i++){
                 for(int j=0; j < M; j++){

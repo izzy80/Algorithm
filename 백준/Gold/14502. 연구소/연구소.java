@@ -17,6 +17,7 @@ public class Main {
     static int answer;
     static Queue<int[]> q;
     static boolean[][] visited;
+    static int zero;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -31,8 +32,8 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             for(int j=0; j < M; j++){
                 int tmp = Integer.parseInt(st.nextToken());
+                if(tmp == 0) zero++;
                 map[i][j] = tmp;
-
             }
         }
         answer = 0;
@@ -55,19 +56,8 @@ public class Main {
                     }
                 }
             }
-
-            bfs();
-
-            //안전 구역 세기
-            int cnt = 0;
-            for(int i=0; i < N; i++){
-                for(int j=0; j < M; j++){
-                    if(map[i][j] == 0 && !visited[i][j]){
-                        cnt++;
-                    }
-                }
-            }
-            answer = Math.max(cnt, answer);
+            
+            answer = Math.max(bfs(), answer);
             return;
         }
 
@@ -82,7 +72,8 @@ public class Main {
         }
     }
 
-    public static void bfs(){
+    public static int bfs(){
+        int cnt = zero - 3; //벽 세움
         while(!q.isEmpty()){
             int[] now = q.poll();
             int cr = now[0];
@@ -97,8 +88,10 @@ public class Main {
                 if(map[nr][nc] == 0){
                     q.add(new int[]{nr,nc});
                     visited[nr][nc] = true;
+                    cnt--;
                 }
             }
         }
+        return cnt;
     }
 }

@@ -1,103 +1,114 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.*;
+import java.io.*;
 
-
+/**
+ * N*N
+ * 각 칸은 R,G,B
+ * 상하좌우 인접 같은 구역
+ * 적록색약인 사람이 봤을 때
+ * 적록색약이 아닌 사람이 봤을 때
+ */
 public class Main {
+
     static int N;
-    static char[][] mmap;
-    static char[][] rgmap;
-
-    static boolean[][] visitedm;
-    static boolean[][] visitedrg;
-
-    static int[] mover = new int[]{-1,0,1,0};
-    static int[] movec = new int[]{0,1,0,-1};
-
-    static int m;
-    static int rg;
-
+    static char[][] map;
+    static boolean[][] no_visited;
+    static boolean[][] yes_visited;
+    static int[] mover = {0,0,-1,1};
+    static int[] movec = {-1,1,0,0};
 
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
-
         N = Integer.parseInt(br.readLine());
-        mmap = new char[N][N];
-        rgmap = new char[N][N];
-
-
-        visitedm = new boolean[N][N];
-        visitedrg= new boolean[N][N];
-
-        for(int i=0; i<N;i++){
-           String str = br.readLine();
-            for(int j=0; j< N;j++){
-                char c = str.charAt(j);
-                mmap[i][j] = c;
-                rgmap[i][j] = c;
-                if(c == 'R'){
-                    rgmap[i][j] = 'G';
-                }
+        map = new char[N][N];
+        for(int i=0; i < N; i++){
+            String str = br.readLine();
+            for(int j=0; j < N; j++){
+                map[i][j] = str.charAt(j);
             }
         }
 
-        m =0;
-        rg =0;
-        for(int i=0; i<N;i++){
-            for(int j=0; j< N;j++){
-                if(!visitedm[i][j]){
-
-                    BFS(i,j,mmap,visitedm,1);
+        //solve
+        int answer1 = 0;
+        int answer2 = 0;
+        yes_visited = new boolean[N][N];
+        no_visited = new boolean[N][N];
+        for(int i = 0; i< N; i++){
+            for(int j=0; j < N; j++){
+                if(!yes_visited[i][j]){
+                    yes_redgreen(i,j,map[i][j]);
+                    answer1++;
                 }
-                if(!visitedrg[i][j]){
-
-                    BFS(i,j,rgmap,visitedrg,0);
+                if(!no_visited[i][j]){
+                    no_redgreen(i,j,map[i][j]);
+                    answer2++;
                 }
             }
         }
-
-        System.out.println(m+" "+rg);
-
-
+        StringBuilder sb = new StringBuilder();
+        sb.append(answer2).append(" ").append(answer1);
 
 
+        //print
+        System.out.println(sb.toString());
     }
 
-    private static void BFS(int r, int c, char[][] map, boolean[][] visited,int dis) {
-        Queue<int[]> q = new LinkedList<>();
-        visited[r][c] = true;
+    public static void yes_redgreen(int r, int c, char color){
+        //적록색약
+        Queue<int[]> q = new ArrayDeque<>();
         q.add(new int[]{r,c});
-        char target = map[r][c];
-        if(dis == 1){
-            m++;
-        }
-        else{
-            rg++;
-        }
+        yes_visited[r][c] = true;
 
         while(!q.isEmpty()){
-            int[] tmp = q.poll();
-            int cr = tmp[0];
-            int cc = tmp[1];
+            int[] now = q.poll();
+            int cr = now[0];
+            int cc = now[1];
 
-            for(int m=0;m<4;m++){
-                int nr = cr+mover[m];
-                int nc = cc+movec[m];
+            for(int m = 0; m < 4; m++){
+                int nr = cr + mover[m];
+                int nc = cc + movec[m];
 
-                if(nr <0 || nr >= N || nc <0 || nc >= N) continue;
-                if(visited[nr][nc] || map[nr][nc] != target) continue;
+                if(nr < 0 || nr >= N || nc <0 || nc >= N) continue;
+                if(yes_visited[nr][nc]) continue;
+                if(color == 'R' || color == 'G') {
+                    if(map[nr][nc] == 'R' || map[nr][nc] == 'G'){
+                        q.add(new int[]{nr,nc});
+                        yes_visited[nr][nc] = true;
+                    }
+                }
+                else if(color == 'B'){
+                    if(map[nr][nc] == 'B'){
+                        q.add(new int[]{nr,nc});
+                        yes_visited[nr][nc] = true;
+                    }
+                }
 
-                visited[nr][nc] = true;
-                q.add(new int[]{nr,nc});
             }
-
-
         }
+    }
 
+    public static void no_redgreen(int r, int c, char color){
+        //적록색약
+        Queue<int[]> q = new ArrayDeque<>();
+        q.add(new int[]{r,c});
+        no_visited[r][c] = true;
 
+        while(!q.isEmpty()){
+            int[] now = q.poll();
+            int cr = now[0];
+            int cc = now[1];
+
+            for(int m = 0; m < 4; m++){
+                int nr = cr + mover[m];
+                int nc = cc + movec[m];
+
+                if(nr < 0 || nr >= N || nc <0 || nc >= N) continue;
+                if(no_visited[nr][nc]) continue;
+                if(map[nr][nc] != color)  continue;
+                q.add(new int[]{nr,nc});
+                no_visited[nr][nc] = true;
+            }
+        }
     }
 }

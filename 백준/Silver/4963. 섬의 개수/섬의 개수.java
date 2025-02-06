@@ -1,88 +1,83 @@
 import java.util.*;
 import java.io.*;
 
+/**
+ * 섬의 개수를 세라
+ * 가로, 세로, 대각선 => 걷기 가능
+ * 1 : 땅
+ * 0 : 바다
+ */
+
 public class Main {
-	static int arr[][];
-	static boolean visit[][];
-	static int dirX[] = {0, 0, -1 ,1, -1, 1, -1, 1}; // 상 하 좌 우 대각선 상좌, 상우, 하좌, 하우
-	static int dirY[] = {-1, 1, 0, 0, 1, 1, -1, -1}; // 상 하 좌 우 대각선 상좌, 상우, 하좌, 하우
-
-	static int w, h, nowX, nowY;
-
-	static class Node {
-		int x;
-		int y;
-
-		public Node(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-	}
-
-	public static void main(String[] args) throws Exception {
-		StringBuilder sb = new StringBuilder();
-		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-		StringTokenizer st;
-
-		String str = " ";
-		while( !(str = br.readLine()).equals("0 0") ) {
-			st = new StringTokenizer(str);
+    static int N,M;
+    static int[][] map;
+    static boolean[][] visited;
+    static final int GROUND = 1;
+    static final int SEA = 0;
+    static int[] mover = {0,0,-1,1, -1,-1,1,1};
+    static int[] movec = {-1,1,0,0, -1,1,1,-1};
 
 
-			w = Integer.parseInt(st.nextToken()); // 너비
-			h = Integer.parseInt(st.nextToken()); // 높이
-			arr = new int[h][w];
-			visit = new boolean[h][w];
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
+        StringBuilder sb = new StringBuilder();
 
-			for(int i=0; i<h; i++) {
-				st = new StringTokenizer(br.readLine());
+        while(true){
+            String str = br.readLine();
+            st = new StringTokenizer(str);
+            M = Integer.parseInt(st.nextToken());
+            N = Integer.parseInt(st.nextToken());
 
-				for(int j=0; j<w; j++) {
-					arr[i][j] = Integer.parseInt(st.nextToken());
+            if(N == 0 && M == 0) break;
 
-				}
-			}
+            map = new int[N][M];
+            for(int i=0; i < N; i++){
+                st = new StringTokenizer(br.readLine());
+                for(int j=0; j < M; j++){
+                    map[i][j] = Integer.parseInt(st.nextToken());
+                }
+            }
 
-			int island_count = 0;
-			for(int i=0; i<h; i++) {
-				for(int j=0; j<w; j++) {
-					
-					if(!visit[i][j] && arr[i][j] == 1) {
-						BFS(i, j);
-						island_count++;
-					}
-				}
-			} 
+//            System.out.println(Arrays.deepToString(map));
 
-			sb.append(island_count).append('\n');
-		}
+            //solve
+            visited = new boolean[N][M];
+            int cnt = 0;
+            for(int i=0; i < N; i++){
+                for(int j=0; j < M; j++){
+                    if(map[i][j] == GROUND && !visited[i][j]){
+                        bfs(i,j);
+                        cnt++;
+                    }
+                }
+            }
+            sb.append(cnt).append("\n");
+        } //tc
+        System.out.println(sb.toString());
 
-		System.out.println(sb);
-	} // End of main
-	
-	static void BFS(int x, int y) {
-		Queue<Node> que = new LinkedList<Node>();
-		visit[x][y] = true;
-		que.offer(new Node(x, y));
-		
-		while( !que.isEmpty() ) {
-			Node node = que.poll();
-		
-			for(int i=0; i<8; i++) {
-				nowX = dirX[i] + node.x;
-				nowY = dirY[i] + node.y;
+    }
 
-				if(range_check() && !visit[nowX][nowY] && arr[nowX][nowY] == 1) {
-					visit[nowX][nowY] = true;
-					que.offer(new Node(nowX, nowY));
-				}
-			}
-		}
+    public static void bfs(int r, int c){
+        Queue<int[]> q = new ArrayDeque<>();
+        q.add(new int[]{r,c});
+        visited[r][c] = true;
 
-	} // End of BFS;
+        while(!q.isEmpty()){
+            int[] now = q.poll();
+            int cr = now[0];
+            int cc = now[1];
 
-	static boolean range_check() {
-		return (nowX >= 0 && nowY >= 0 && nowX < h && nowY < w);
-	} // End of range_check
-	
-} // End of Main class
+            for(int m=0; m < 8; m++){
+                int nr = cr + mover[m];
+                int nc = cc + movec[m];
+
+                if(nr < 0 || nr >= N || nc <0 || nc>=M) continue;
+                if(visited[nr][nc]) continue;
+                if(map[nr][nc] == SEA) continue;
+                q.add(new int[]{nr,nc});
+                visited[nr][nc] = true;
+            }
+        }
+    }
+}

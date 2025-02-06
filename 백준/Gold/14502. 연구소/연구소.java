@@ -1,14 +1,22 @@
 import java.util.*;
 import java.io.*;
 
+/**
+ * 벽 3개 무조건 세움
+ * 안전 영역의 최대값이 될 때의 크기는?
+ *
+ * 0 : 빈칸
+ * 1 : 벽
+ * 2 : 바이러스
+ */
 public class Main {
     static int N,M;
     static int[][] map;
     static int[] mover = {0,0,-1,1};
     static int[] movec = {-1,1,0,0};
+    static int answer;
     static Queue<int[]> q;
     static boolean[][] visited;
-    static int ans;
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -17,35 +25,40 @@ public class Main {
         M = Integer.parseInt(st.nextToken());
 
         map = new int[N][M];
+
+
         for(int i=0; i < N; i++){
             st = new StringTokenizer(br.readLine());
-            for(int j=0; j< M; j++){
-                map[i][j] = Integer.parseInt(st.nextToken());
+            for(int j=0; j < M; j++){
+                int tmp = Integer.parseInt(st.nextToken());
+                map[i][j] = tmp;
+
             }
         }
+        answer = 0;
+        dfs(0);
 
-        ans = 0;
-        DFS(0);
-        System.out.println(ans);
+        System.out.println(answer);
 
     }
 
-    static public void DFS(int depth){
+    public static void dfs(int depth){
         if(depth == 3){
-            //바이러스가 퍼질 수 있는 칸 다 q에 미리 집어넣음
+            //BFS돌려서 바이러스 퍼트리기
             q = new LinkedList<>();
             visited = new boolean[N][M];
             for(int i=0; i < N; i++){
-                for(int j=0; j<M; j++){
-                    if(map[i][j] == 2){
+                for(int j=0; j < M; j++){
+                    if(map[i][j] == 2 && !visited[i][j]){
                         q.add(new int[]{i,j});
                         visited[i][j] = true;
                     }
                 }
             }
-            // 바이러스 퍼트리기
-            BFS();
-            //안전 영역
+
+            bfs();
+
+            //안전 구역 세기
             int cnt = 0;
             for(int i=0; i < N; i++){
                 for(int j=0; j < M; j++){
@@ -54,30 +67,34 @@ public class Main {
                     }
                 }
             }
-            ans = Math.max(ans, cnt);
+            answer = Math.max(cnt, answer);
             return;
         }
-        //벽 세우기
-        for(int i=0; i <N; i++){
-            for(int j=0; j < M;j++){
+
+        for(int i=0; i < N; i++){
+            for(int j=0; j < M; j++){
                 if(map[i][j] == 0){
-                    map[i][j] = 1; //벽세우기
-                    DFS(depth+1);
-                    map[i][j] = 0; //다시 취소
+                    map[i][j] = 1;
+                    dfs(depth+1);
+                    map[i][j] = 0;
                 }
             }
         }
     }
 
-    static public void BFS(){
+    public static void bfs(){
         while(!q.isEmpty()){
-            int[] tmp = q.poll();
-            for(int m=0; m <4; m++){
-                int nr = tmp[0]+ mover[m];
-                int nc = tmp[1]+ movec[m];
+            int[] now = q.poll();
+            int cr = now[0];
+            int cc = now[1];
 
-                if(nr < 0 || nr >= N || nc < 0 || nc >= M) continue;
-                if(map[nr][nc] == 0 && !visited[nr][nc]) {
+            for(int m=0; m < 4; m++){
+                int nr = cr + mover[m];
+                int nc = cc + movec[m];
+
+                if(nr < 0 || nr >= N || nc <0 || nc >= M) continue;
+                if(visited[nr][nc]) continue;
+                if(map[nr][nc] == 0){
                     q.add(new int[]{nr,nc});
                     visited[nr][nc] = true;
                 }

@@ -1,80 +1,66 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
+/**
+ * 현재위치에서 나이트가 다음위치로 이동할 때 최소 몇 번 만에 이동?
+ *
+ */
 public class Main {
-    static int I;
-    static int[][] map;
+    static int N;
     static int[][] dist;
-
-    static StringTokenizer st;
-
-    static int[] mover = new int[]{-1,-2,-2,-1,1,2,2,1};
-    static int[] movec = new int[]{-2,-1,1,2,-2,-1,1,2};
-
+    static boolean[][] visited;
+    static int endr, endc;
+    static int[] mover = {-1, -2, -2, -1, 1, 2, 2, 1};
+    static int[] movec = {-2, -1, 1, 2, 2, 1, -1, -2};
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-
         int T = Integer.parseInt(br.readLine());
+        StringTokenizer st;
+        StringBuilder sb = new StringBuilder();
 
         for(int tc = 0; tc < T; tc++){
-            I = Integer.parseInt(br.readLine());
+            N = Integer.parseInt(br.readLine());
 
-            map = new int[I][I];
-            dist = new int[I][I];
-            for(int i=0; i<I;i++){
-                Arrays.fill(dist[i],-1);
-            }
+            st = new StringTokenizer(br.readLine());
+            int startr = Integer.parseInt(st.nextToken());
+            int startc = Integer.parseInt(st.nextToken());
 
-            String st = br.readLine();
-            String[] starr = st.split(" ");
-            int str = Integer.parseInt(starr[0]);
-            int stc = Integer.parseInt(starr[1]);
+            st = new StringTokenizer(br.readLine());
+            endr = Integer.parseInt(st.nextToken());
+            endc = Integer.parseInt(st.nextToken());
 
-            String ed = br.readLine();
-            String[] edarr = ed.split(" ");
-            int edr = Integer.parseInt(edarr[0]);
-            int edc = Integer.parseInt(edarr[1]);
-
-            map[str][stc] = 1; // 시작점
-            map[edr][edc] = 2; //도착점
-
-
-
-            BFS(str, stc);
-
-            System.out.println(dist[edr][edc]);
-
+            int cnt = bfs(startr,startc);
+            sb.append(cnt).append("\n");
         }
-
-
-
+        System.out.println(sb.toString());
     }
 
-    private static void BFS(int r, int c) {
-        Queue<int[]> q = new LinkedList<>();
-        dist[r][c] = 0;
+    public static int bfs(int r, int c){
+        dist = new int[N][N];
+        Queue<int[]> q = new ArrayDeque<>();
+        visited = new boolean[N][N];
         q.add(new int[]{r,c});
+        visited[r][c] = true;
 
         while(!q.isEmpty()){
-            int[] tmp = q.poll();
-            int cr = tmp[0];
-            int cc = tmp[1];
+            int[] now = q.poll();
+            int cr = now[0];
+            int cc = now[1];
+            if(cr == endr && cc == endc) return dist[endr][endc];
 
-            for(int m =0; m<8; m++){
+            for(int m=0; m < 8; m++){
                 int nr = cr + mover[m];
                 int nc = cc + movec[m];
 
-                if(nr < 0 || nr >= I || nc < 0|| nc >= I) continue;
-                if(dist[nr][nc] >= 0) continue;
-                dist[nr][nc] = dist[cr][cc]+1;
+                if(nr < 0 || nr >= N || nc <0 || nc >= N) continue;
+                if(visited[nr][nc]) continue;
                 q.add(new int[]{nr,nc});
+                dist[nr][nc] = dist[cr][cc]+1;
+                visited[nr][nc] = true;
             }
         }
+
+        return 0;
     }
 }

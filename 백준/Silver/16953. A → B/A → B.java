@@ -2,36 +2,35 @@ import java.util.*;
 import java.io.*;
 
 public class Main {
-    static long a,b;
-    static int cnt;
-
-    static int bfs(){
-        Queue<Long> q = new LinkedList<>();
-        q.add(a);
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st = new StringTokenizer(br.readLine());
+        int A = Integer.parseInt(st.nextToken());
+        int B = Integer.parseInt(st.nextToken());
+        long answer = -1;
+        Queue<long[]>q = new ArrayDeque<>();
+        q.add(new long[]{A,1});
 
         while(!q.isEmpty()){
-            int size = q.size();
+            long[] tmp = q.poll();
+            long now = tmp[0];
+            long cnt = tmp[1];
+//            System.out.println(now + " ," + cnt);
 
-            for(int i=0; i<size; i++){
-                long tmp = q.poll();
-                if(tmp==b)
-                    return cnt+1;
-
-                if(tmp*2<=b) q.add(tmp*2);
-                if(tmp*10+1<=b) q.add(tmp*10+1);
+            if(now == B){
+                answer = cnt;
+                break;
             }
-            cnt++;
+
+            if(now * 2 <= B) {
+                q.add(new long[]{now * 2, cnt+1});
+            }
+            if((now*10)+1 <= B){
+                q.add(new long[]{(now*10)+1, cnt+1});
+            }
         }
-        return -1;
-    }
 
-    public static void main(String args[]) throws IOException {
-        BufferedReader bfr = new BufferedReader(new InputStreamReader(System.in));
-        StringTokenizer stk = new StringTokenizer(bfr.readLine());
+        System.out.println(answer);
 
-        a = Long.parseLong(stk.nextToken());
-        b = Long.parseLong(stk.nextToken());
-
-        System.out.println(bfs());
     }
 }

@@ -29,8 +29,8 @@ public class Main {
 
         //solve
         answer = Integer.MAX_VALUE;
-        visited = new boolean[N];
         for(int i=0; i < N; i++){
+            visited = new boolean[N];
             visited[i] = true;
             dfs(i, i, 0, 0);
         }
@@ -40,6 +40,7 @@ public class Main {
     }
 
     public static void dfs(int start,int now, int cost,int depth){
+        if (cost >= answer) return; //cost가 이전 경우보다 더 큰 경우 중단
         if(depth == N-1){
             // 모든 도시를 모두 방문한 경우, N-1인 이유는 백트래킹 메서드를 실행하기 전에 이미 방문함
             if(map[now][start] != 0){

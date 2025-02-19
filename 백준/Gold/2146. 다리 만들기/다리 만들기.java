@@ -71,26 +71,24 @@ public class Main {
             int cc = tmp[1];
             int cdist = tmp[2];
 
+            //
+            if(isLand[cr][cc] != 0 && isLand[cr][cc] != idx){
+                answer = Math.min(answer, cdist-1);
+            }
+
+            if(cdist > answer) continue;
+
             for(int m =0; m < 4; m++){
                 int nr = cr + mover[m];
                 int nc = cc + movec[m];
 
                 if(nr < 0 || nr >= N || nc <0 || nc >= N) continue;
                 if(v[nr][nc]) continue;
-                if(isLand[nr][nc] == idx){
-                    //같은 지역
-                    q.add(new int[]{nr,nc,cdist});
-                    v[nr][nc] = true;
-                }
-                else if(isLand[nr][nc] == 0){
-                    //다리를 놓을 수 있는 곳
-                    q.add(new int[]{nr,nc,cdist+1});
-                    v[nr][nc] = true;
-                }
-                else{
-                    //다른 지역
-                    answer = Math.min(answer, cdist);
-                }
+                if(isLand[nr][nc] == idx) continue;
+
+                //다리를 놓을 수 있는 곳
+                q.add(new int[]{nr,nc,cdist+1});
+                v[nr][nc] = true;
             }
         }
     }

@@ -4,99 +4,90 @@ import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
 public class Main {
-    static class Node{ //Node 생성
-        char data;
+    static StringBuilder sb = new StringBuilder();
+    static class Node{
+        String value;
         Node left;
         Node right;
 
-        public Node(char data){
-            this.data = data;
+        public Node(String value, Node left, Node right){
+            this.value = value;
+            this.left = left;
+            this.right = right;
         }
     }
-
-    static class Tree{//tree 생성
-        Node root;
-
-        //메소드
-        public void createNode(char data, char leftData, char rightData){
-
-            if(root == null){//root가 비어있다면
-                //완전 상위 노드 생성. 처음 1번만
-                root = new Node(data);
-                root.left = leftData=='.'? null : new Node(leftData);
-                root.right = rightData=='.'? null : new Node(rightData);
-            }
-            else{
-                //root가 null이 아니라면 탐색 시작
-                searchNode(root, data, leftData, rightData);
-            }
-        }
-
-        private void searchNode(Node node, char data, char leftData, char rightData) {
-            if(node == null){
-                //노드가 없을 경우 return
-                return;
-            }
-            else if(node.data==data){
-                //노드를 찾은 경우
-                node.left = leftData == '.'?null:new Node(leftData);
-                node.right = rightData == '.'?null:new Node(rightData);
-            }
-            else{
-                searchNode(node.left, data, leftData, rightData); //오른쪽 재귀 탐색
-                searchNode(node.right, data, leftData, rightData); //왼쪽 재귀 탐색
-            }
-        }
-
-        //전위 순회 : Root -> Left -> Right
-        public void preOrder(Node node){
-            if(node != null){
-                System.out.print(node.data); //root 출력
-                if(node.left!=null) preOrder(node.left); //left를 중심으로 다시 preOrder
-                if(node.right != null) preOrder(node.right);
-            }
-        }
-
-        //중위순회 : Left -> Root -> Right
-        public void inOrder(Node node){
-            if(node != null){
-                if(node.left!=null) inOrder(node.left); //left를 중심으로 다시 preOrder
-                System.out.print(node.data); //root 출력
-                if(node.right != null) inOrder(node.right);
-            }
-        }
-
-        //후위순회 : Left -> Right -> Root
-        public void postOrder(Node node){
-            if(node != null){
-                if(node.left!=null) postOrder(node.left); //left를 중심으로 다시 preOrder
-                if(node.right != null) postOrder(node.right);
-                System.out.print(node.data); //root 출력
-            }
-        }
-
-
-    }
+    static Node tree = new Node("A",null, null); //트리 root 만들기
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int N = Integer.parseInt(br.readLine()); //이진 트리의 노드의 개수
+
+        int N = Integer.parseInt(br.readLine());
         StringTokenizer st;
-
-        Tree tree = new Tree();
-        for(int i=0; i< N; i++){
+        for(int i=0; i < N; i++){
             st = new StringTokenizer(br.readLine());
-            char root = st.nextToken().charAt(0);
-            char left = st.nextToken().charAt(0);
-            char right = st.nextToken().charAt(0);
 
-            tree.createNode(root, left, right);
+            String root = st.nextToken();
+            String left = st.nextToken();
+            String right = st.nextToken();
+
+            insertNode(tree, root, left, right);
         }
 
-        tree.preOrder(tree.root);
-        System.out.println();
-        tree.inOrder(tree.root);
-        System.out.println();
-        tree.postOrder(tree.root);
+        preOrder(tree);
+        sb.append("\n");
+        inOrder(tree);
+        sb.append("\n");
+        postOrder(tree);
+
+        System.out.println(sb.toString());
+    }
+
+    public static void preOrder(Node node){
+        if(node == null){
+            return;
+        }
+        sb.append(node.value);
+        preOrder(node.left);
+        preOrder(node.right);
+    }
+
+    public static void inOrder(Node node){
+        if(node == null){
+            return;
+        }
+        inOrder(node.left);
+        sb.append(node.value);
+        inOrder(node.right);
+    }
+
+    public static void postOrder(Node node){
+        if(node == null){
+            return;
+        }
+        postOrder(node.left);
+        postOrder(node.right);
+        sb.append(node.value);
+    }
+
+    public static void insertNode(Node temp, String root, String left, String right){
+        if(temp.value.equals(root)){
+            //현재 tree의 value가 root랑 같다면?
+            //양 옆에 값을 넣을 수 있음
+
+            //left가 .이면 null, 아니면 새로운 node 추가
+            temp.left = (left.equals(".")? null : new Node(left, null, null));
+            temp.right = (right.equals(".")? null : new Node(right, null, null));
+        }
+        else{
+            //현재 tree의 value가 root와 같지 않다면
+            //탐색을 해야함.
+            //그래서 left에 값이 있다면 거기를 탐색
+            if(temp.left != null){
+                insertNode(temp.left, root, left, right);
+            }
+            if(temp.right != null){
+                insertNode(temp.right, root, left, right);
+            }
+        }
     }
 }

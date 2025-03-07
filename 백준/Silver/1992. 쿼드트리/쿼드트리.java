@@ -1,3 +1,5 @@
+
+
 import java.util.*;
 import java.io.*;
 
@@ -6,11 +8,11 @@ public class Main {
     static int[][] map;
     static StringBuilder sb = new StringBuilder();
 
-    public static void main(String[] args) throws IOException{
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        N = Integer.parseInt(br.readLine());
-        map = new int[N][N];
+        int N = Integer.parseInt(br.readLine());
 
+        map = new int[N][N];
         for(int i=0; i < N; i++){
             String str = br.readLine();
             for(int j=0; j < N; j++){
@@ -18,37 +20,40 @@ public class Main {
             }
         }
 
-        divide_quard(0,N, 0, N, 0);
+        //solve
+        dfs(0,0,N);
 
-        //출력
+        //print
         System.out.println(sb.toString());
     }
 
-    static public void divide_quard(int sr, int er, int sc, int ec, int loc){
-
-        if(check(sr, er, sc, ec)){//만약에 true
-            //다 똑같음
-            sb.append(map[sr][sc]);
+    public static void dfs(int r, int c, int size){
+        if(size == 1){
+            sb.append(map[r][c]);
+            return;
         }
-        else{//다름
-            int midR = (sr+er)/2;
-            int midC = (sc+ec)/2;
+        if(checkNumber(r,c,size, map[r][c])){
+            //같다면
+            sb.append(map[r][c]);
+//            System.out.println("현재 사이즈에서 다 같음");
+        }
+        else{
+            //다르다면
+//            System.out.println("현재 사이즈에서 다름");
+            int new_size = size/2;
             sb.append("(");
-            divide_quard(sr, midR, sc, midC,1); //왼쪽 위
-            divide_quard(sr, midR, midC, ec,2); //오른쪽 위
-            divide_quard(midR, er, sc, midC,3); //왼쪽 아래
-            divide_quard(midR, er, midC, ec,4); //오른쪽 아래
+            dfs(r,c,new_size); //
+            dfs(r,c+new_size,new_size); //
+            dfs(r+new_size,c,new_size); //
+            dfs(r+new_size,c+new_size,new_size); //
             sb.append(")");
         }
-
-
     }
 
-    static public boolean check(int sr, int er, int sc, int ec){
-        int cur = map[sr][sc];
-        for(int i=sr; i<er; i++){
-            for(int j=sc; j<ec; j++){
-                if(cur != map[i][j]) return false;
+    public static boolean checkNumber(int startr, int startc, int size, int number){
+        for(int r = startr; r < startr+size; r++){
+            for(int c = startc; c < startc+size; c++){
+                if(map[r][c] != number) return false;
             }
         }
         return true;

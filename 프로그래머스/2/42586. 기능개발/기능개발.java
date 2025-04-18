@@ -1,41 +1,38 @@
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-
+import java.util.*;
 class Solution {
     public int[] solution(int[] progresses, int[] speeds) {
-      List<Integer> list = new LinkedList<>();
-            Queue<Integer> q = new LinkedList<>();
-
-            for(int i=0 ; i < progresses.length; i++){
-                double num = (100 - progresses[i])/(double)speeds[i];
-                int numm = (100 - progresses[i])/speeds[i];
-
-                if(num == numm) {
-                    q.add(numm);
-                }
-                else{
-                    q.add(numm+1);
-                }
-            }
-//            System.out.println(q.toString());
-
-            int now = q.poll();
-            int cnt = 1;
-            while(!q.isEmpty()){
-                if(now < q.peek()){
-                    list.add(cnt);
-                    cnt = 1;
-                    now = q.poll();
-                }
-                else {
-                    cnt++;
-                    q.poll();
-                }
-            }
-            list.add(cnt);
-
-
-            return list.stream().mapToInt(Integer::intValue).toArray();
+        int N = progresses.length; 
+        
+        
+        int[] arr = new int[N];
+        for(int i=0; i < N ; i++){
+            int tmp =  (100-progresses[i])/speeds[i];
+            int mod = (100-progresses[i])%speeds[i];
+            if(mod != 0) tmp+=1; 
+            arr[i] = tmp; 
         }
+        
+        int cnt = 1;
+        int prev = arr[0]; 
+        int idx = 0; 
+        ArrayList<Integer> answer = new ArrayList<>(); 
+        for(int i=1; i < N; i++){
+            int next = arr[i]; 
+            if(prev < next){
+                answer.add(cnt); 
+                cnt = 1; 
+                prev = next; 
+            }
+            else{
+                cnt++; 
+            }
+            // System.out.println(cnt); 
+        }
+        answer.add(cnt); 
+        // System.out.println(Arrays.toString(arr)); 
+        
+        return answer.stream()
+                             .mapToInt(Integer::intValue)
+                             .toArray();
     }
+}

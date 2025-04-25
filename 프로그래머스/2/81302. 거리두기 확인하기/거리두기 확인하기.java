@@ -1,62 +1,75 @@
 import java.util.*;
+
 class Solution {
-    static int[] mover = {-1,1,0,0};
-    static int[] movec = {0,0,-1,1};
+    static final char PERSON = 'P';
+    static final char EMPTY = 'O';
+    static final char PARTITION = 'X';
+    static final int N = 5;
+    static int[] mover = {0,0,1,-1};
+    static int[] movec = {1,-1,0,0};
     
     public int[] solution(String[][] places) {
-          int[] answer = new int[5];
+         int[] answer = new int[N];
 
-            int N = 5;
-
-            for(int i=0; i< N; i++){
-                char[][] room = new char[N][N];
-                
-                for(int j=0; j< N; j++){
-                    for(int k = 0; k < N; k++){
+            for(int i=0; i < N; i++){
+                int personCnt = 0;
+                char[][] map = new char[N][N];
+                //map 초기화
+                for(int j=0; j < N; j++){
+                    for(int k=0; k < N; k++){
                         char c = places[i][j].charAt(k);
-                        room[j][k] = c;
+                        map[j][k] = c;
+
+                        if(c == PERSON) personCnt++;
                     }
                 }
-                //거리두기를 제대로 했는지 체크해서 answer에 집어넣어주기
-                boolean flag = false;
-                for(int j=0; j< 5; j++){
-                    for(int k=0; k< 5; k++){
-                        if(room[j][k] == 'P'){
-                            //주변 탐색
-                            if(BFS(j,k, room)){//거리 못 지키면
-                                flag = true;
+                //solve
+                if(personCnt == 0) {
+                    answer[i] = 1;
+                    continue;
+                }
+                boolean isSafe = true;
+                outer : for(int j = 0; j < N; j++){
+                    for(int k=0; k < N; k++){
+                        if(map[j][k] == PERSON){
+                            if (!bfs(j, k, map)) {
+                                isSafe = false;
+                                break outer;
                             }
                         }
                     }
                 }
-                answer[i] = flag == true? 0: 1;
+                answer[i] = isSafe ? 1 : 0;
             }
             return answer;
-    }
-   private boolean BFS(int r, int c, char[][] room) {
-            Queue<int[]> q = new LinkedList<>();
-            boolean[][] visited = new boolean[5][5];
+    
+}
 
-            q.add(new int[]{r,c});
-            visited[r][c] = true;
+public boolean bfs(int j, int k,char[][] map){
+    Queue<int[]> q = new ArrayDeque<>();
+    boolean[][] visited = new boolean[N][N];
+    q.add(new int[]{j,k});
+    visited[j][k] = true;
 
-            while(!q.isEmpty()){
-                int[] current = q.poll();
+    while(!q.isEmpty()){
+        int[] tmp = q.poll();
+        int r = tmp[0];
+        int c = tmp[1];
 
-                for(int m=0; m < 4; m++){
-                    int nr = current[0] +mover[m];
-                    int nc = current[1] + movec[m];
-                    int manhattan = Math.abs(r-nr)+Math.abs(c-nc);
+        for(int m =0 ; m <4; m++){
+            int nr = r +mover[m];
+            int nc = c + movec[m];
 
-                    if(nr <0 || nr >= 5|| nc < 0 || nc >= 5) continue;
-                    if(visited[nr][nc] || manhattan > 2) continue; 
-                    if(room[nr][nc] == 'P') return true; //P면 바로 P return
-                    else if(room[nr][nc] == 'O'){
-                        visited[nr][nc] = true;
-                        q.add(new int[]{nr, nc});
-                    }
-                }
-            }
-            return false;
+            if(nr < 0 || nr >= N || nc < 0 || nc >= N) continue;
+            if(visited[nr][nc]) continue;
+            if(map[nr][nc] == PARTITION) continue;
+            if(Math.abs(j-nr)+Math.abs(k-nc) > 2) continue;
+            if(map[nr][nc] == PERSON) return false;
+            q.add(new int[]{nr,nc});
+            visited[nr][nc] = true;
         }
+    }
+
+    return true;
+}
 }

@@ -1,33 +1,33 @@
-import java.util.Scanner;
+
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.util.*;
+import java.io.*;
 
 public class Main {
-	static Integer dp[];
-	static int[] score;
-	
-	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		int N = sc.nextInt();
-		int result = 0; 
-		
-		score = new int[N+1];
-		dp = new Integer[N+1];
-		for(int i=1;i<=N;i++) {
-			score[i] = sc.nextInt();
-		}
-		
-		dp[0] = score[0];
-		dp[1] = score[1];
-		
-		if(N>=2) {
-			dp[2] = score[1]+score[2];
-		}
-		
-		System.out.println(dpdp(N));
-	}// main
-	private static int dpdp(int N) {
-		if(dp[N] == null) {
-			dp[N] = Math.max(dpdp(N-2), dpdp(N-3)+score[N-1])+score[N];
-		}
-		return dp[N];
-	}
+    public static void main(String[] args) throws IOException{
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int N = Integer.parseInt(br.readLine()); //계단의 수
+
+        int[] stairs = new int[N+1];
+        for (int i = 1; i <= N; i++) {
+            stairs[i] = Integer.parseInt(br.readLine());
+        }
+
+
+        //solve
+        int[] dp = new int[N+1];
+
+        dp[1] = stairs[1];
+        if (N >= 2) dp[2] = stairs[1] + stairs[2];
+        if (N >= 3) dp[3] = Math.max(stairs[1] + stairs[3], stairs[2] + stairs[3]);
+
+        for (int i = 4; i <= N; i++) {
+            dp[i] = Math.max(dp[i - 2] + stairs[i], dp[i - 3] + stairs[i - 1] + stairs[i]);
+        }
+
+        System.out.println(dp[N]);
+
+    }
 }

@@ -1,28 +1,27 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        int T = Integer.parseInt(br.readLine());
 
-        for(int tc =0; tc < T; tc++){
-            int N = Integer.parseInt(br.readLine());
+	public static void main(String[] args) throws Exception {
 
-            //dp
-            int[] dp = new int[N+1];
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+	
+		int T = Integer.parseInt(br.readLine());
 
-            // 초기값 설정
-            if(N >= 1) dp[1] = 1;
-            if(N >= 2) dp[2] = 2;
-            if(N >= 3) dp[3] = 4;
+		for (int t = 0; t < T; t++) {
+			int n = Integer.parseInt(br.readLine());
+			int[] dp = new int[11];
 
-            for(int i=4; i<=N; i++){
-                dp[i] = dp[i-1] + dp[i-2] +dp[i-3];
-            }
-            //답
-            System.out.println(dp[N]);
-        }//tc for
-    }//main
+			dp[1] = 1;
+			dp[2] = 2;
+			dp[3] = 4;
+
+			for (int i = 4; i <= n; i++) {
+				dp[i] = dp[i - 1] + dp[i - 2] + dp[i - 3];
+			}
+
+			System.out.println(dp[n]);
+		}
+
+	}
 }

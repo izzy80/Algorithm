@@ -1,35 +1,27 @@
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
 
-public class Main {
-	static int[] arr;
-	static Integer[] dp;
-	static int max; 
-	public static void main(String[] args) {
-		//입력 
-		Scanner sc = new Scanner(System.in);
-		int N = sc.nextInt();
-		
-		dp = new Integer[N];
-		arr = new int[N];
-		for(int i=0; i<N;i++) {
-			arr[i] = sc.nextInt();
+class Main {
+
+	public static void main(String[] args) throws Exception {
+		BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+		int N = Integer.parseInt(br.readLine());
+
+		int[] arr = new int[N];
+		StringTokenizer st = new StringTokenizer(br.readLine());
+		for (int i = 0; i < N; i++) {
+			arr[i] = Integer.parseInt(st.nextToken());
 		}
-		//초기화 
+
+		int[] dp = new int[N];
+		int max = arr[0];
 		dp[0] = arr[0];
-		max = arr[0];
-		
-		recur(N-1);
-		
-		//출력 
-		System.out.println(max);
-	}//main
-	
-	private static int recur(int N) {
-		if(dp[N] == null) {
-			dp[N] = Math.max(recur(N - 1) + arr[N], arr[N]);
- 
-			max = Math.max(dp[N], max);
+		for (int i = 1; i < N; i++) {
+			dp[i] = Math.max(arr[i], dp[i - 1] + arr[i]);
+
+			max = Math.max(dp[i], max);
 		}
-		return dp[N];
+
+		System.out.println(max);
 	}
 }

@@ -1,51 +1,34 @@
-import java.util.Scanner;
+import java.util.*;
+import java.io.*;
 
-public class Main {
-	static Long[][] dp;
-	static int N;
-	final static long MOD = 1000_000_000;
-	
-	public static void main(String[] args) {
-		//입력 
-		Scanner sc = new Scanner(System.in);
-		N = sc.nextInt();
-		dp = new Long[N+1][10];
-		
-		//첫번째 자리수는 1로 초기화 
-		for(int i=0;i<10;i++) {
-			dp[1][i] = 1L;
-		}
-		
-		long result = 0; 
-		
-		//마지막 자리수인 1~9까지의 경우의 수를 모두 더해준다. 
-		for(int i=1; i<= 9; i++) {
-			result += recur(N, i);
-		}
-		System.out.println(result % MOD);
-	}
+class Main {
+    static final long DIV = 1_000_000_000L;
+    public static void main(String[] args) throws IOException {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); 
+        int N = Integer.parseInt(br.readLine()); 
 
-	static long recur(int digit, int val) {
-		// 첫째 자리수에 도착한다면 더이상 탐색할 필요 없음 
-		if(digit == 1) {
-			return dp[digit][val];
-		}
-		
-		//해당 자리수의 val값에 대해 탐색하지 않았을 경우 
-		if(dp[digit][val] == null) {
-			//val이 0일 경우 이전 자리는 1밖에 못 옴 
-			if(val == 0) {
-				dp[digit][val] = recur(digit - 1,1);
-			}
-			//val이 1일 경우 이전은 8밖에 못 옴
-			else if(val == 9) {
-				dp[digit][val] = recur(digit -1, 8);
-			}
-			//그 외의 경우는 val-1과 val+1값의 경우의 수를 합한 경우의 수가 됨 
-			else {
-				dp[digit][val] = recur(digit-1, val - 1)+recur(digit-1, val+1);
-			}
-		}
-		return dp[digit][val]%MOD;
-	}
+        long[][] dp = new long[N+1][10];
+        
+        for(int i = 1; i <= 9; i++){
+            dp[1][i] = 1;
+        }
+        
+        for(int i = 2; i <= N; i++){
+            for(int j = 0; j <= 9; j++){
+                if(j == 0){
+                    dp[i][0] = dp[i-1][1] % DIV;
+                } else if(j == 9){
+                    dp[i][9] = dp[i-1][8] % DIV;
+                } else {
+                    dp[i][j] = (dp[i-1][j-1] + dp[i-1][j+1]) % DIV;
+                }
+            }
+        }
+        
+        long answer = 0;
+        for(int i = 0; i <= 9; i++){
+            answer = (answer + dp[N][i]) % DIV;
+        }
+        System.out.println(answer);
+    }
 }
